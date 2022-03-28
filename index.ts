@@ -1,5 +1,3 @@
-import { ServerApiVersion } from "mongodb";
-
 import { config } from "dotenv";
 
 config();
@@ -11,7 +9,6 @@ async function run() {
     await connect(process.env.MONGO_URI!, {
       sslKey: credentials,
       sslCert: credentials,
-      serverApi: ServerApiVersion.v1,
     });
     console.log("connected!");
     // perform actions using client
