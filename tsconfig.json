@@ -1,15 +1,15 @@
 {
-  "compilerOptions": {
-    "paths": {
-      "*": ["./*.d.ts"]
-    },
-    "downlevelIteration": true,
-    "module": "CommonJS",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "noImplicitAny": false,
-    "outDir": "lib"
-  }
+    "compilerOptions": {
+        "paths": {
+            "*": ["./*.d.ts"]
+        },
+        "downlevelIteration": true,
+        "module": "CommonJS",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "noImplicitAny": false,
+        "outDir": "lib"
+    }
 }
