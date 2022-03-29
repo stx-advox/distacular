@@ -12,6 +12,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Button from "react-bootstrap/Button";
+import CreateMicroDAOView from "./routes/CreateMicroDAO";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 
@@ -39,7 +40,10 @@ function App() {
                             path="/send-stx/:txId"
                             element={<SendSTXView />}
                         />
-
+                        <Route
+                            path="/create-micro-dao/:daoId"
+                            element={<CreateMicroDAOView />}
+                        />
                         {/* <Route index element={<Home />} /> */}
                         {/* <Route path="teams" element={<Teams />}>
                     <Route path=":teamId" element={<Team />} />
