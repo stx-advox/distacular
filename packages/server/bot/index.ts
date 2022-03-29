@@ -69,6 +69,7 @@ client.on("interactionCreate", async (interaction) => {
       interaction.editReply({
         content: "You can't send more than 1000 or less than 0.000001 STX",
       });
+      return;
     }
 
     const tx = new SendSTX({
