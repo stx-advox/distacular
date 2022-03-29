@@ -22,7 +22,7 @@ const commands = [
             .setMinValue(0.000001)
             .setRequired(true)
         )
-        .addStringOption((input) =>
+        .addUserOption((input) =>
           input
             .setName("recipient")
             .setDescription("BNS name or STX address of recipient")

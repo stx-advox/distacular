@@ -29,11 +29,14 @@ const client = new Client({
 client.login(process.env.DISCORD_BOT_TOKEN);
 
 client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
-
-  if (interaction.commandName !== process.env.COMMAND_NAME) {
+  if (
+    !interaction.isCommand() ||
+    interaction.commandName !== process.env.COMMAND_NAME ||
+    interaction.guildId === process.env.GUILD_ID!
+  ) {
     return;
   }
+
   const commandData = interaction.options.data;
 
   const subcommand = commandData[0];
