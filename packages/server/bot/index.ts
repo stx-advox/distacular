@@ -48,23 +48,14 @@ client.on("interactionCreate", async (interaction) => {
     const member = interaction.member as GuildMember;
     await interaction.deferReply({ ephemeral: true });
     const res = await fetch(
-      `${process.env.STACKS_URL}/v1/names/${member.nickname}`
+      `${process.env.STACKS_URL}/v1/names/${recipient.value}`
     );
     const data: INameResponse = await res.json();
 
     const amountInuSTX = (amount.value as number) * 1e6;
     const tx = new SendSTX({
-      recipient: recipient.value,
+      recipient: data.address,
       amount: amountInuSTX,
-      postConditions: [
-        serializePostCondition(
-          makeStandardSTXPostCondition(
-            data.address,
-            FungibleConditionCode.Equal,
-            Number(amountInuSTX)
-          )
-        ),
-      ],
     });
     await tx.save();
     interaction.editReply({
