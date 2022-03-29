@@ -1,3 +1,4 @@
 *.cer
-node_modules
+node_modules/
 .env
+lib/
