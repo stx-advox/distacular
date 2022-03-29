@@ -4,9 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "cd server && tsc && node lib/index.js",
-        "dev": "cd server && tsnd --respawn index.ts",
-        "build": "lerna run --scope distacular-client build && lerna run --scope distacular-server start",
+        "build:frontend": "lerna run --scope distacular-client build --stream",
+        "start:backend": "lerna run --scope distacular-server start --stream",
+        "start": "npm run build:frontend && start:backend",
         "dev:server": "lerna run --scope distacular-server dev --stream"
     },
     "keywords": [],
