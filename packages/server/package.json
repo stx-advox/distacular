@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "tsc && node lib/index.js",
+        "start": "tsc && NODE_ENV=production node lib/index.js",
         "dev": "tsnd --respawn index.ts"
     },
     "keywords": [],
