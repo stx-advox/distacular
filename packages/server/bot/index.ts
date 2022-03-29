@@ -4,6 +4,7 @@ import { config } from "dotenv";
 
 config();
 import { connect } from "mongoose";
+import { handleMicroDAO } from "./handlers/micro-dao";
 
 import { handleSendSTX } from "./handlers/send-stx";
 const credentials = process.env.CERT_FILE_PATH;
@@ -31,8 +32,17 @@ client.on("interactionCreate", async (interaction: Interaction) => {
 
   const subcommand = commandData[0];
 
-  if (subcommand.name === "send_stx") {
+  await interaction.deferReply({ ephemeral: true });
+
+  if (process.env.NODE_ENV === "production" && subcommand.name === "send_stx") {
     handleSendSTX(interaction);
+  } else if (subcommand.name === "micro-dao") {
+    handleMicroDAO(interaction);
+  } else {
+    interaction.reply({
+      ephemeral: true,
+      content: "Got it!!",
+    });
   }
 });
 
