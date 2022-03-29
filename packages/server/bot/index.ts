@@ -59,10 +59,8 @@ client.on("interactionCreate", async (interaction) => {
     });
     await tx.save();
     interaction.editReply({
-      content: `Sending ${amount.value} STX to ${recipient.value}`,
+      content: `Go to ${process.env.SITE_URL}/send-stx/${tx.id} to send ${amount.value} STX to ${recipient.value}`,
     });
-
-    console.log(tx.id);
   }
 });
 
