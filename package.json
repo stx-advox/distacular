@@ -7,7 +7,8 @@
         "build:frontend": "lerna run --scope distacular-client build --stream",
         "start:backend": "lerna run --scope distacular-server start --stream",
         "start": "npm run build:frontend && npm run start:backend",
-        "dev:server": "lerna run --scope distacular-server dev --stream"
+        "dev:frontend": "lerna run --scope distacular-client start",
+        "dev:backend": "lerna run --scope distacular-server dev --stream"
     },
     "keywords": [],
     "author": "",

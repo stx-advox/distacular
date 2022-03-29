@@ -7,65 +7,49 @@ import {
     AuthOptions,
     Connect,
     useConnect,
-    UserData,
     UserSession,
 } from "@stacks/connect-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Button from "react-bootstrap/Button";
-import { useState } from "react";
-import { useEffect } from "react";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 
 const userSession = new UserSession({ appConfig });
 
 function App() {
-    const [userData, setUserData] = useState<UserData>();
-
-    useEffect(() => {
-        if (userSession.isUserSignedIn()) {
-            const data = userSession.loadUserData();
-            setUserData(data);
-        }
-    }, []);
     const authOptions: AuthOptions = {
         appDetails: {
             name: "distacular",
             icon: window.location.origin + "/favicon.ico",
         },
         userSession,
-        onFinish(payload) {
-            console.log("calling...", payload);
-            setUserData(payload.userSession.loadUserData());
-        },
     };
+    const isLoggedIn = userSession.isUserSignedIn();
 
     return (
         <Connect authOptions={authOptions}>
-            <BrowserRouter>
-                <Routes>
-                    {userData ? (
-                        <>
-                            <Route path="/" element={<Home />} />
-                            <Route
-                                path="/send-stx/:txId"
-                                element={<SendSTXView />}
-                            />
-                        </>
-                    ) : (
-                        <Route path="/" element={<Login />} />
-                    )}
+            {!isLoggedIn ? (
+                <Login />
+            ) : (
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route
+                            path="/send-stx/:txId"
+                            element={<SendSTXView />}
+                        />
 
-                    {/* <Route index element={<Home />} /> */}
-                    {/* <Route path="teams" element={<Teams />}>
+                        {/* <Route index element={<Home />} /> */}
+                        {/* <Route path="teams" element={<Teams />}>
                     <Route path=":teamId" element={<Team />} />
                     <Route path="new" element={<NewTeamForm />} />
                     <Route index element={<LeagueStandings />} />
                 </Route> */}
-                    {/* </Route> */}
-                </Routes>
-            </BrowserRouter>
+                        {/* </Route> */}
+                    </Routes>
+                </BrowserRouter>
+            )}
         </Connect>
     );
 }
@@ -89,11 +73,10 @@ const Home = () => {
     );
 };
 const Login = () => {
-    const { authenticate, authOptions, userSession } = useConnect();
+    const { authenticate, authOptions } = useConnect();
     const login = () => {
-        authenticate(authOptions);
+        authenticate(authOptions).then(() => window.location.reload());
     };
-    console.log(userSession);
     return (
         <div className="App">
             <header className="App-header">
