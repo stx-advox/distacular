@@ -1,8 +1,3 @@
-import {
-  FungibleConditionCode,
-  makeStandardSTXPostCondition,
-  serializePostCondition,
-} from "@stacks/transactions";
 import { Client, GuildMember, Intents } from "discord.js";
 
 import { config } from "dotenv";
@@ -47,12 +42,35 @@ client.on("interactionCreate", async (interaction) => {
     const amount = options!.find((item) => item.name === "amount")!;
     const member = interaction.member as GuildMember;
     await interaction.deferReply({ ephemeral: true });
-    const res = await fetch(
-      `${process.env.STACKS_URL}/v1/names/${recipient.value}`
-    );
+    let res;
+    try {
+      res = await fetch(
+        `${process.env.STACKS_URL}/v1/names/${recipient.value}`
+      );
+    } catch (error) {
+      const notFound = (error as Response).status === 404;
+      if (notFound) {
+        interaction.editReply({
+          content: `Couldn't find a stx address with the name ${recipient.value}`,
+        });
+      } else {
+        interaction.editReply({
+          content: `Unknown error occurred will check it out tho dude`,
+        });
+      }
+      console.log(error);
+      return;
+    }
     const data: INameResponse = await res.json();
 
     const amountInuSTX = (amount.value as number) * 1e6;
+
+    if (amount.value! > 1000 || amount.value! < 0.000001) {
+      interaction.editReply({
+        content: "You can't send more than 1000 or less than 0.000001 STX",
+      });
+    }
+
     const tx = new SendSTX({
       recipient: data.address,
       amount: amountInuSTX,
