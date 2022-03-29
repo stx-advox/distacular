@@ -1,4 +1,5 @@
 import { openSTXTransfer } from "@stacks/connect-react";
+import { StacksMainnet } from "@stacks/network";
 import React from "react";
 import { useState } from "react";
 import { useCallback } from "react";
@@ -31,6 +32,7 @@ const SendSTXView: React.FC = () => {
             openSTXTransfer({
                 ...txData,
                 amount: String(txData.amount),
+                network: new StacksMainnet(),
             });
         }
     }, [txData]);
