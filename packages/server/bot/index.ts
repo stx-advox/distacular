@@ -75,7 +75,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-async function run() {
+export async function run() {
   try {
     await connect(process.env.MONGO_URI!, {
       sslKey: credentials,
@@ -88,5 +88,3 @@ async function run() {
     // Ensures that the client will close when you finish/error
   }
 }
-
-run().catch(console.dir);
