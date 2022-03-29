@@ -41,7 +41,7 @@ client.on("interactionCreate", async (interaction) => {
   if (subcommand.name === "send_stx") {
     const { options } = subcommand;
 
-    const recipient = options!.find((item) => item.name === "recipient")!;
+    const recipient = options!.find((item) => item.name === "recipient")!.user!;
     const amount = options!.find((item) => item.name === "amount")!;
 
     await interaction.deferReply({ ephemeral: true });
@@ -55,14 +55,25 @@ client.on("interactionCreate", async (interaction) => {
       return;
     }
 
-    const res = await fetch(
-      `${process.env.STACKS_URL}/v1/names/${recipient.value}`
-    );
+    const stacks = client.guilds.cache.get(process.env.GUILD_ID!)!;
+    const member = await stacks.members.fetch(recipient);
+
+    const name = member.nickname || recipient.username;
+
+    const matchesBNS = /^\w{2,}\.\w{2,15}$/.test(name);
+
+    if (!matchesBNS) {
+      interaction.editReply({
+        content: "User's name doesn't match the bns format",
+      });
+      return;
+    }
+    const res = await fetch(`${process.env.STACKS_URL}/v1/names/${name}`);
 
     const notFound = res.status === 404;
     if (notFound) {
       interaction.editReply({
-        content: `Couldn't find a stx address with the name ${recipient.value}`,
+        content: `Couldn't find a stx address with the name ${name}`,
       });
       return;
     } else if (res.status !== 200) {
@@ -80,7 +91,7 @@ client.on("interactionCreate", async (interaction) => {
     });
     await tx.save();
     interaction.editReply({
-      content: `Go to ${process.env.SITE_URL}/send-stx/${tx.id} to send ${amount.value} STX to ${recipient.value}`,
+      content: `Go to ${process.env.SITE_URL}/send-stx/${tx.id} to send ${amount.value} STX to ${name}`,
     });
   }
 });
