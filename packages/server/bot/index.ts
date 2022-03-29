@@ -31,6 +31,9 @@ client.login(process.env.DISCORD_BOT_TOKEN);
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
 
+  if (interaction.commandName !== process.env.COMMAND_NAME) {
+    return;
+  }
   const commandData = interaction.options.data;
 
   const subcommand = commandData[0];
@@ -40,7 +43,7 @@ client.on("interactionCreate", async (interaction) => {
 
     const recipient = options!.find((item) => item.name === "recipient")!;
     const amount = options!.find((item) => item.name === "amount")!;
-    const member = interaction.member as GuildMember;
+
     await interaction.deferReply({ ephemeral: true });
 
     const amountInuSTX = (amount.value as number) * 1e6;
