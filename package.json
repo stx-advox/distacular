@@ -5,7 +5,9 @@
     "main": "index.js",
     "scripts": {
         "start": "cd server && tsc && node lib/index.js",
-        "dev": "cd server && tsnd --respawn index.ts"
+        "dev": "cd server && tsnd --respawn index.ts",
+        "build": "lerna run --scope distacular-client build && lerna run --scope distacular-server start",
+        "dev:server": "lerna run --scope distacular-server dev --stream"
     },
     "keywords": [],
     "author": "",

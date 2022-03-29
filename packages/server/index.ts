@@ -6,10 +6,14 @@ const port = process.env.PORT || 8244;
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, "..", "client", "build")));
+
 app.use("/api", apiRouter);
 
 app.use("*", function (request, response) {
-  response.sendFile(path.resolve(__dirname, "index.html"));
+  response.sendFile(
+    path.resolve(__dirname, "..", "client", "build", "index.html")
+  );
 });
 
 run().catch(console.dir);
