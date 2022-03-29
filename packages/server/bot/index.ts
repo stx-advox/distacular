@@ -32,7 +32,7 @@ client.on("interactionCreate", async (interaction) => {
   if (
     !interaction.isCommand() ||
     interaction.commandName !== process.env.COMMAND_NAME ||
-    interaction.guildId === process.env.GUILD_ID!
+    interaction.guildId !== process.env.GUILD_ID!
   ) {
     return;
   }
