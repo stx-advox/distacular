@@ -21,7 +21,7 @@ const amountBuilder = (input: SlashCommandNumberOption) => {
 };
 
 config();
-export const deployCommands = async () => {
+export const deployCommands = async (guild: string) => {
   await connectDB();
 
   MicroDAO.find({}, async (err, DAOs) => {
@@ -78,10 +78,7 @@ export const deployCommands = async () => {
 
     try {
       await rest.put(
-        Routes.applicationGuildCommands(
-          process.env.CLIENT_ID!,
-          process.env.GUILD_ID!
-        ),
+        Routes.applicationGuildCommands(process.env.CLIENT_ID!, guild),
         { body: commands }
       );
       return console.log("Successfully registered application commands.");
@@ -90,5 +87,3 @@ export const deployCommands = async () => {
     }
   });
 };
-
-deployCommands();
