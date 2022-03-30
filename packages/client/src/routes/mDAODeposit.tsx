@@ -21,7 +21,7 @@ const MicroDAODepositView: React.FC = () => {
     const [txId, setTxId] = useState("");
     const [deployerName, setDeployerName] = useState<string>();
 
-    const loadDeployerName = async () => {
+    const loadDeployerName = useCallback(async () => {
         if (contractAddress) {
             const [address] = contractAddress.split(".");
             const api = new NamesApi();
@@ -35,11 +35,11 @@ const MicroDAODepositView: React.FC = () => {
                 setDeployerName(namesOwnedByDeployer[0]);
             }
         }
-    };
+    }, [contractAddress]);
 
     useEffect(() => {
         loadDeployerName();
-    }, []);
+    }, [loadDeployerName]);
 
     const deposit = useCallback(async () => {
         if (contractAddress && amount) {

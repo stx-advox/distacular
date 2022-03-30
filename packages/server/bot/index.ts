@@ -6,9 +6,10 @@ config();
 import { handleMicroDAO } from "./handlers/micro-dao";
 
 import { handleSendSTX } from "./handlers/send-stx";
+import { listenToSocket } from "./sockets/stacks-node";
 import { deployCommands } from "./utils/deploy-commands";
 
-const client = new Client({
+export const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_MESSAGES,
@@ -48,3 +49,5 @@ client.on("interactionCreate", async (interaction: Interaction) => {
 client.on("guildCreate", async (guild) => {
   await deployCommands(guild.id);
 });
+
+listenToSocket();
