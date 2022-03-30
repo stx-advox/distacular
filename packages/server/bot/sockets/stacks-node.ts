@@ -12,6 +12,7 @@ export const listenToSocket = async () => {
       const matchesMicroDAO = /;; micro-dao/g.test(contract.source_code);
 
       if (matchesMicroDAO) {
+        console.log("micro-dao deployed", event.smart_contract.contract_id);
         socket.subscribeTxUpdates(event.tx_id, (update) => {
           if (update.tx_status === "success") {
             MicroDAO.find(
