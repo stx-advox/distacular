@@ -6,7 +6,6 @@ export const handleMicroDAO = async (interaction: CommandInteraction) => {
   const commandData = interaction.options.data;
 
   const subcommand = commandData![0]!.options![0];
-  console.log(subcommand.name);
   if (subcommand.name === "create") {
     handleCreateMicroDAO(subcommand, interaction);
   } else if (subcommand.name === "deposit") {

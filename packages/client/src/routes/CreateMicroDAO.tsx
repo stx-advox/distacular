@@ -37,7 +37,6 @@ const CreateMicroDAOView: React.FC = () => {
                 "$INITIAL_MEMBERS_PLACEHOLDER",
                 daoMembersList
             );
-            console.log(updatedContract);
             openContractDeploy({
                 codeBody: updatedContract,
                 contractName: daoData.name,
