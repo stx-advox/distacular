@@ -63,7 +63,10 @@ export const deployCommands = async (guild: string) => {
                     .setName("micro-dao-name")
                     .setDescription("Pick one of the DAOs")
                     .addChoices(
-                      DAOs.map((dao) => [dao.name, dao.contractAddress!])
+                      DAOs.filter((dao) => dao.contractAddress).map((dao) => [
+                        dao.name,
+                        dao.contractAddress!,
+                      ])
                     )
                     .setRequired(true)
                 )
