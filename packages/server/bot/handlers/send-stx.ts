@@ -3,6 +3,17 @@ import fetch from "cross-fetch";
 import { CommandInteraction } from "discord.js";
 import { getNameAddressWithErrorHandling } from "../utils/getNameAddress";
 
+export const checkSTXAmount = (
+  amount: number,
+  interaction: CommandInteraction
+) => {
+  if (amount > 1000 || amount < 0.000001) {
+    return interaction.editReply({
+      content: "You can't send more than 1000 or less than 0.000001 STX",
+    });
+  }
+};
+
 export const handleSendSTX = async (interaction: CommandInteraction) => {
   const commandData = interaction.options.data;
 
@@ -14,10 +25,7 @@ export const handleSendSTX = async (interaction: CommandInteraction) => {
 
   const amountInuSTX = (amount.value as number) * 1e6;
 
-  if (amount.value! > 1000 || amount.value! < 0.000001) {
-    interaction.editReply({
-      content: "You can't send more than 1000 or less than 0.000001 STX",
-    });
+  if (checkSTXAmount(amount!.value as number, interaction)) {
     return null;
   }
 

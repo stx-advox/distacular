@@ -1,13 +1,11 @@
-import { Client, GuildMember, Intents, Interaction } from "discord.js";
+import { Client, Intents, Interaction } from "discord.js";
 
 import { config } from "dotenv";
 
 config();
-import { connect } from "mongoose";
 import { handleMicroDAO } from "./handlers/micro-dao";
 
 import { handleSendSTX } from "./handlers/send-stx";
-const credentials = process.env.CERT_FILE_PATH;
 
 const client = new Client({
   intents: [
@@ -45,17 +43,3 @@ client.on("interactionCreate", async (interaction: Interaction) => {
     });
   }
 });
-
-export async function run() {
-  try {
-    await connect(process.env.MONGO_URI!, {
-      sslKey: credentials,
-      sslCert: credentials,
-    });
-    console.log("connected!");
-    // perform actions using client
-  } catch (e) {
-    console.log(e);
-    // Ensures that the client will close when you finish/error
-  }
-}

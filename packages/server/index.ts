@@ -1,9 +1,13 @@
 import express from "express";
 import path from "path";
-import { run } from "./bot";
+
 import { apiRouter } from "./routers/api";
 import cors from "cors";
+import { connectDB } from "./bot/utils/connect-db";
+import { config } from "dotenv";
 const port = process.env.PORT || 8244;
+import "./bot";
+config();
 
 const app = express();
 
@@ -24,6 +28,6 @@ app.use("*", function (request, response) {
   );
 });
 
-run().catch(console.dir);
+connectDB().catch(console.dir);
 
 app.listen(port);

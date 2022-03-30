@@ -2,21 +2,13 @@ import logo from "./logo.svg";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SendSTXView from "./routes/SendSTXView";
-import {
-    AppConfig,
-    AuthOptions,
-    Connect,
-    useConnect,
-    UserSession,
-} from "@stacks/connect-react";
+import { AuthOptions, Connect, useConnect } from "@stacks/connect-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Button from "react-bootstrap/Button";
 import CreateMicroDAOView from "./routes/CreateMicroDAO";
-
-const appConfig = new AppConfig(["store_write", "publish_data"]);
-
-const userSession = new UserSession({ appConfig });
+import MicroDAODepositView from "./routes/mDAODeposit";
+import { userSession } from "./constants/stacks-session";
 
 function App() {
     const authOptions: AuthOptions = {
@@ -43,6 +35,10 @@ function App() {
                         <Route
                             path="/create-micro-dao/:daoId"
                             element={<CreateMicroDAOView />}
+                        />
+                        <Route
+                            path="/deposit-micro-dao/:contractAddress/:amount"
+                            element={<MicroDAODepositView />}
                         />
                         {/* <Route index element={<Home />} /> */}
                         {/* <Route path="teams" element={<Teams />}>
