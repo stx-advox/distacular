@@ -6,6 +6,7 @@ config();
 import { handleMicroDAO } from "./handlers/micro-dao";
 
 import { handleSendSTX } from "./handlers/send-stx";
+import { deployCommands } from "./utils/deploy-commands";
 
 const client = new Client({
   intents: [
@@ -42,4 +43,8 @@ client.on("interactionCreate", async (interaction: Interaction) => {
       content: "Got it!!",
     });
   }
+});
+
+client.on("guildCreate", async (guild) => {
+  await deployCommands(guild.id);
 });
