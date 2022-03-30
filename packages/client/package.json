@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@stacks/blockchain-api-client": "^3.0.2",
         "@stacks/connect-react": "^13.0.2",
         "@stacks/network": "^3.3.0",
         "@stacks/transactions": "^3.3.0",

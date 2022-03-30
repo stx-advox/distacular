@@ -5,11 +5,12 @@ import {
     FungibleConditionCode,
     uintCV,
 } from "@stacks/transactions";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCallback } from "react";
 import Button from "react-bootstrap/esm/Button";
 import { useParams } from "react-router-dom";
 import { userSession } from "../constants/stacks-session";
+import { NamesApi } from "@stacks/blockchain-api-client";
 
 const MicroDAODepositView: React.FC = () => {
     const { contractAddress, amount } = useParams<{
@@ -18,13 +19,33 @@ const MicroDAODepositView: React.FC = () => {
     }>();
 
     const [txId, setTxId] = useState("");
+    const [deployerName, setDeployerName] = useState<string>();
 
-    const deposit = useCallback(() => {
+    const loadDeployerName = async () => {
+        if (contractAddress) {
+            const [address] = contractAddress.split(".");
+            const api = new NamesApi();
+            const namesOwnedByDeployer = (
+                await api.getNamesOwnedByAddress({
+                    address,
+                    blockchain: "stacks",
+                })
+            ).names;
+            if (namesOwnedByDeployer) {
+                setDeployerName(namesOwnedByDeployer[0]);
+            }
+        }
+    };
+
+    useEffect(() => {
+        loadDeployerName();
+    }, []);
+
+    const deposit = useCallback(async () => {
         if (contractAddress && amount) {
             const [address, name] = contractAddress.split(".");
             const userAddress =
                 userSession.loadUserData().profile.stxAddress.mainnet;
-
             openContractCall({
                 contractAddress: address,
                 contractName: name,
@@ -48,7 +69,9 @@ const MicroDAODepositView: React.FC = () => {
     return contractAddress ? (
         <div className="App">
             <header className="App-header">
-                <p>DAO name: {contractAddress.split(".")[1]}</p>
+                <p>
+                    DAO name: {deployerName}.{contractAddress.split(".")[1]}
+                </p>
                 <p>Deposit Amount: {Number(amount) / 1e6} STX</p>
                 {txId ? (
                     <Button

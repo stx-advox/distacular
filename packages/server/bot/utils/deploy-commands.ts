@@ -8,6 +8,7 @@ import { config } from "dotenv";
 import { MicroDAO } from "../schemas/micro-dao";
 import { createMicroDAOCmd } from "./commands/create-micro-dao-cmd";
 import { connectDB } from "./connect-db";
+import { getBNSName } from "./getBNSName";
 
 const amountBuilder = (input: SlashCommandNumberOption) => {
   return input
@@ -29,6 +30,13 @@ export const deployCommands = async (guild: string) => {
       return;
     }
 
+    let existingDAOs = DAOs.filter((dao) => dao.contractAddress);
+    let daoChoices: [name: string, value: string][] = [];
+    for (let choice of existingDAOs) {
+      const prefix = await getBNSName(choice.contractAddress!.split(".")[0]);
+      const newDAOName = `${prefix}.${choice.name}`;
+      daoChoices.push([newDAOName, choice.contractAddress!]);
+    }
     const commands = [
       new SlashCommandBuilder()
         .setName("distacular")
@@ -62,12 +70,7 @@ export const deployCommands = async (guild: string) => {
                   input
                     .setName("micro-dao-name")
                     .setDescription("Pick one of the DAOs")
-                    .addChoices(
-                      DAOs.filter((dao) => dao.contractAddress).map((dao) => [
-                        dao.name,
-                        dao.contractAddress!,
-                      ])
-                    )
+                    .addChoices(daoChoices)
                     .setRequired(true)
                 )
                 .addNumberOption(amountBuilder)
