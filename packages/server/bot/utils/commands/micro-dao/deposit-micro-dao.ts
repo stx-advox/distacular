@@ -12,17 +12,16 @@ export const depositMicroDAOCmd = async () => {
     const newDAOName = `${prefix}.${choice.name}`;
     daoChoices.push([newDAOName, choice.contractAddress!]);
   }
-  return (input: SlashCommandSubcommandBuilder) => {
-    return input
-      .setName("deposit")
-      .setDescription("Deposit or donate to a micro dao")
-      .addStringOption((input) =>
-        input
-          .setName("micro-dao-name")
-          .setDescription("Pick one of the DAOs")
-          .addChoices(daoChoices)
-          .setRequired(true)
-      )
-      .addNumberOption(amountBuilder);
-  };
+
+  return new SlashCommandSubcommandBuilder()
+    .setName("deposit")
+    .setDescription("Deposit or donate to a micro dao")
+    .addStringOption((input) =>
+      input
+        .setName("micro-dao-name")
+        .setDescription("Pick one of the DAOs")
+        .addChoices(daoChoices)
+        .setRequired(true)
+    )
+    .addNumberOption(amountBuilder);
 };

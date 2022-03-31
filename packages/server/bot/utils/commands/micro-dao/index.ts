@@ -5,12 +5,11 @@ import { depositMicroDAOCmd } from "./deposit-micro-dao";
 export const microDAOCmd = async () => {
   const depositCmd = await depositMicroDAOCmd();
 
-  return (input: SlashCommandSubcommandGroupBuilder) =>
-    input
-      .setName("micro-dao")
-      .setDescription(
-        "The mDAO contract interface offers all the options to create and manage micro mDAOs"
-      )
-      .addSubcommand(createMicroDAOCmd)
-      .addSubcommand(depositCmd);
+  return new SlashCommandSubcommandGroupBuilder()
+    .setName("micro-dao")
+    .setDescription(
+      "The mDAO contract interface offers all the options to create and manage micro mDAOs"
+    )
+    .addSubcommand(createMicroDAOCmd)
+    .addSubcommand(depositCmd);
 };
