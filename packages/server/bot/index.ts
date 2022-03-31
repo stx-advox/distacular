@@ -49,5 +49,3 @@ client.on("interactionCreate", async (interaction: Interaction) => {
 client.on("guildCreate", async (guild) => {
   await deployCommands(guild.id);
 });
-
-listenToSocket();
