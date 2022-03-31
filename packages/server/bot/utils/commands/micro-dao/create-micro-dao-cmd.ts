@@ -1,6 +1,21 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 
-export const createMicroDAOCmd = new SlashCommandSubcommandBuilder()
+const addMultipleUserOptions = (
+  builder: SlashCommandSubcommandBuilder,
+  start: number,
+  end: number
+) => {
+  for (let i = start; i <= end; i += 1) {
+    builder.addUserOption((input) =>
+      input
+        .setName(`member${i}`)
+        .setDescription(`member${i}`)
+        .setRequired(false)
+    );
+  }
+};
+
+const createMicroDAOCmd = new SlashCommandSubcommandBuilder()
   .setName("create")
   .setDescription("Create a mDAO on stacks")
   .addStringOption((input) =>
@@ -10,22 +25,8 @@ export const createMicroDAOCmd = new SlashCommandSubcommandBuilder()
         "mDAO name max 50 characters only letters dashes and numbers allowed 50 characters max"
       )
       .setRequired(true)
-  )
-  .addUserOption((input) =>
-    input.setName("member2").setDescription("2nd member").setRequired(false)
-  )
-  .addUserOption((input) =>
-    input.setName("member3").setDescription("3rd member").setRequired(false)
-  )
-  .addUserOption((input) =>
-    input.setName("member4").setDescription("4th member").setRequired(false)
-  )
-  .addUserOption((input) =>
-    input.setName("member5").setDescription("5th member").setRequired(false)
-  )
-  .addUserOption((input) =>
-    input.setName("member6").setDescription("6th member").setRequired(false)
-  )
-  .addUserOption((input) =>
-    input.setName("member7").setDescription("7th member").setRequired(false)
   );
+
+addMultipleUserOptions(createMicroDAOCmd, 1, 7);
+
+export { createMicroDAOCmd, addMultipleUserOptions };
