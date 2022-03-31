@@ -22,7 +22,7 @@ const amountBuilder = (input: SlashCommandNumberOption) => {
 };
 
 config();
-export const deployCommands = async (guild: string) => {
+export const deployCommands = async (guild: string = process.env.GUILD_ID!) => {
   await connectDB();
 
   MicroDAO.find({}, async (err, DAOs) => {

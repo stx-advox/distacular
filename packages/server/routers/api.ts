@@ -9,6 +9,7 @@ import {
 } from "@stacks/blockchain-api-client";
 import { SmartContractTransaction } from "@stacks/stacks-blockchain-api-types";
 import fetch from "cross-fetch";
+import { deployCommands } from "../bot/utils/deploy-commands";
 
 export const apiRouter = Router();
 
@@ -111,6 +112,8 @@ apiRouter.put<any, { daoId: string }, any, { txId: string }>(
           res.json({
             message: "Saved DAO successfully!",
           });
+
+          deployCommands();
         }
       );
 
