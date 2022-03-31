@@ -5,11 +5,16 @@ import {
   CommandInteractionOption,
   GuildMember,
 } from "discord.js";
+import { FundingProposal } from "../../schemas/funding-proposal";
 
 export const handleCreateFundingProposal = async (
   subcommand: CommandInteractionOption,
   interaction: CommandInteraction
 ) => {
+  const daoContract = subcommand.options!.find(
+    (item) => item.name === "micro-dao-name"
+  )!.value as string;
+
   const granteesMap = subcommand.options!.reduce((acc, option) => {
     if (option.name.startsWith("grantee")) {
       return {
@@ -43,9 +48,16 @@ export const handleCreateFundingProposal = async (
     if (!data) {
       return;
     }
-    addressesAmounts.push([grantee, amount]);
-  }
-  interaction.editReply({ content: "Got it dude!" });
 
-  console.log(granteesMap);
+    const amountInuSTX = Math.floor(amount * 1e6);
+    addressesAmounts.push([grantee, amountInuSTX]);
+
+    const fundingProposal = new FundingProposal();
+    fundingProposal.daoContractAddress = daoContract;
+    fundingProposal.grants = addressesAmounts;
+    await fundingProposal.save();
+    await interaction.editReply({
+      content: `Go to ${process.env.SITE_URL}/create-funding-proposal/${fundingProposal.id} to submit the tx to the stacks blockchain!`,
+    });
+  }
 };
