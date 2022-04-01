@@ -147,5 +147,6 @@ apiRouter.get("/funding-proposal/:id", async (req, res) => {
   res.json({
     contractAddress: fundingProposal.daoContractAddress,
     grants: fundingProposal.grants,
+    memo: fundingProposal.memo,
   });
 });
