@@ -54,7 +54,7 @@ export const handleCreateFundingProposal = async (
     }
 
     const amountInuSTX = Math.floor(amount * 1e6);
-    addressesAmounts.push([grantee, amountInuSTX]);
+    addressesAmounts.push([data.address, amountInuSTX]);
 
     const fundingProposal = new FundingProposal();
     fundingProposal.daoContractAddress = daoContract;
