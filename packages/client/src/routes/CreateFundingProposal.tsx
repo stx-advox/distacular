@@ -48,7 +48,7 @@ export const CreateFundingProposalView = () => {
         senderAddress: userSession.loadUserData().profile.stxAddress.mainnet,
       });
 
-      const contractBalance = cvToJSON(balanceRes).value.value / 1e6;
+      const contractBalance = Number(cvToJSON(balanceRes).value.value);
 
       const totalAmount = fundingProposalData.grants.reduce(
         (acc, [, amount]) => acc + Number(amount),
