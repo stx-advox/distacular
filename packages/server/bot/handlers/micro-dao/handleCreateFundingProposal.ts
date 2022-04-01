@@ -19,6 +19,12 @@ export const handleCreateFundingProposal = async (
     (item) => item.name === "funding-proposal-description"
   )!.value as string;
 
+  if (memo.length > 50) {
+    return interaction.editReply({
+      content: "Description length must not exceed 50 characters!",
+    });
+  }
+
   const granteesMap = subcommand.options!.reduce((acc, option) => {
     if (option.name.startsWith("grantee")) {
       return {
