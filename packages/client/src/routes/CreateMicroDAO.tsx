@@ -4,7 +4,7 @@ import React from "react";
 import { useState } from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import { useParams } from "react-router-dom";
 import { mDAOContract } from "../constants/micro-dao";
 import { userSession } from "../constants/stacks-session";

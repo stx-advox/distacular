@@ -15,6 +15,10 @@ export const handleCreateFundingProposal = async (
     (item) => item.name === "micro-dao-name"
   )!.value as string;
 
+  const memo = subcommand.options!.find(
+    (item) => item.name === "funding-proposal-description"
+  )!.value as string;
+
   const granteesMap = subcommand.options!.reduce((acc, option) => {
     if (option.name.startsWith("grantee")) {
       return {
@@ -55,6 +59,7 @@ export const handleCreateFundingProposal = async (
     const fundingProposal = new FundingProposal();
     fundingProposal.daoContractAddress = daoContract;
     fundingProposal.grants = addressesAmounts;
+    fundingProposal.memo = memo;
     await fundingProposal.save();
     await interaction.editReply({
       content: `Go to ${process.env.SITE_URL}/create-funding-proposal/${fundingProposal.id} to submit the tx to the stacks blockchain!`,

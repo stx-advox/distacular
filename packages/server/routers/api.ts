@@ -10,6 +10,7 @@ import {
 import { SmartContractTransaction } from "@stacks/stacks-blockchain-api-types";
 import fetch from "cross-fetch";
 import { deployCommands } from "../bot/utils/deploy-commands";
+import { FundingProposal } from "../bot/schemas/funding-proposal";
 
 export const apiRouter = Router();
 
@@ -119,5 +120,32 @@ apiRouter.put<any, { daoId: string }, any, { txId: string }>(
 
       // res.json(txData);
     }
+
+    res.status(400).json({
+      error: "Need a tx id sent in request body!",
+    });
   }
 );
+
+apiRouter.get("/funding-proposal/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({
+      error: "Send the id of the funding proposal to get it",
+    });
+  }
+
+  const fundingProposal = await FundingProposal.findById(id).exec();
+
+  if (!fundingProposal) {
+    return res
+      .status(404)
+      .json({ error: "Couldn't find the requested funding proposal!" });
+  }
+
+  res.json({
+    contractAddress: fundingProposal.daoContractAddress,
+    grants: fundingProposal.grants,
+  });
+});

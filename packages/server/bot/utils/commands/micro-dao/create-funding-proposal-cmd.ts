@@ -1,5 +1,6 @@
 import {
   SlashCommandNumberOption,
+  SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
   SlashCommandUserOption,
 } from "@discordjs/builders";
@@ -31,7 +32,15 @@ const createFundingProposal = async () => {
     .setDescription(
       "Create a proposal to send money to one or more people (at least one at most 10)"
     )
-    .addStringOption(await buildDAOField());
+    .addStringOption(await buildDAOField())
+    .addStringOption(
+      new SlashCommandStringOption()
+        .setName("funding-proposal-description")
+        .setDescription(
+          "A short sentence or preferably a link to the details of the funding proposal"
+        )
+        .setRequired(true)
+    );
   createMultipleUserAmountPairs(cmd);
   return cmd;
 };
