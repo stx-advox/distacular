@@ -1,5 +1,5 @@
 import { connectWebSocketClient } from "@stacks/blockchain-api-client";
-import { client } from "..";
+import { client } from "../client";
 import { deployCommands } from "../utils/deploy-commands";
 
 import { MicroDAO } from "../schemas/micro-dao";
@@ -28,7 +28,7 @@ export const listenToSocket = async () => {
 
                 const guilds = await client.guilds.fetch();
 
-                for (let guild of guilds.values()) {
+                for (const guild of guilds.values()) {
                   await deployCommands(guild.id);
                 }
               }

@@ -4,6 +4,7 @@ import { handleCreateMicroDAO } from "./handleCreateMDAO";
 import { handleDepositMicroDAO } from "./handleDepositMDAO";
 import { handleDissent } from "./handleDissent";
 import { handleExecuteFundingProposal } from "./handleExecuteFundingProposal";
+import { handleGetFundingProposal } from "./handleGetProposal";
 
 export const handleMicroDAO = async (interaction: CommandInteraction) => {
   const commandData = interaction.options.data;
@@ -24,5 +25,7 @@ export const handleMicroDAO = async (interaction: CommandInteraction) => {
     handleDissent(subcommand, interaction);
   } else if (subcommand.name === "execute-funding-proposal") {
     handleExecuteFundingProposal(subcommand, interaction);
+  } else if (subcommand.name === "get-proposal-data") {
+    handleGetFundingProposal(subcommand, interaction);
   }
 };

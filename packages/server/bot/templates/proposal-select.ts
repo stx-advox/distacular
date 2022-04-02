@@ -50,46 +50,65 @@ export const unpackCV = (proposal: IClarityValue) => {
   }, {} as any);
 };
 
-export const getDAOPendingProposals = async (contractId: string) => {
-  const config = new Configuration({
-    basePath: process.env.STACKS_URL,
-  });
-  const SCApi = new SmartContractsApi(config);
+const config = new Configuration({
+  basePath: process.env.STACKS_URL,
+});
 
+export const SCApi = new SmartContractsApi(config);
+
+export const infoApi = new InfoApi(config);
+
+export const getProposal = async (
+  contractId: string,
+  proposalIndex: number,
+  burn_block_height?: number
+) => {
+  if (!burn_block_height) {
+    burn_block_height = (await infoApi.getCoreApiInfo()).burn_block_height;
+  }
+
+  const [contractAddress, contractName] = contractId.split(".");
+  const res = await SCApi.callReadOnlyFunction({
+    contractAddress,
+    contractName,
+    functionName: "get-proposal-raw",
+    readOnlyFunctionArgs: {
+      sender: contractAddress,
+      arguments: [cvToHex(uintCV(proposalIndex))],
+    },
+  });
+
+  const result = cvToJSON(hexToCV(res.result!)).value as IClarityValue | null;
+
+  if (result) {
+    const formattedProposal = unpackCV(result) as IFormattedProposal;
+    formattedProposal.id = proposalIndex;
+    formattedProposal.isPastDissent =
+      formattedProposal["created-at"] + 144 * 5 < burn_block_height;
+
+    return formattedProposal;
+  }
+};
+
+export const getDAOProposals = async (contractId: string) => {
   let proposalIndex = 0;
   let doneGettingProposals = false;
 
   const proposals: IFormattedProposal[] = [];
 
-  const [contractAddress, contractName] = contractId.split(".");
-  const infoApi = new InfoApi(config);
-
   const { burn_block_height } = await infoApi.getCoreApiInfo();
 
   while (!doneGettingProposals) {
-    const res = await SCApi.callReadOnlyFunction({
-      contractAddress,
-      contractName,
-      functionName: "get-proposal-raw",
-      readOnlyFunctionArgs: {
-        sender: contractAddress,
-        arguments: [cvToHex(uintCV(proposalIndex))],
-      },
-    });
-
-    const result = cvToJSON(hexToCV(res.result!)).value as IClarityValue | null;
-
-    if (result) {
-      const formattedProposal = unpackCV(result) as IFormattedProposal;
-      formattedProposal.id = proposalIndex;
-      formattedProposal.isPastDissent =
-        formattedProposal["created-at"] + 144 * 5 < burn_block_height;
-      if (formattedProposal.status === 0) {
-        proposals.push(formattedProposal);
-      }
+    const formattedProposal = await getProposal(
+      contractId,
+      proposalIndex,
+      burn_block_height
+    );
+    if (formattedProposal) {
+      proposals.push(formattedProposal);
     }
 
-    doneGettingProposals = !result;
+    doneGettingProposals = !formattedProposal;
 
     proposalIndex++;
   }
@@ -105,7 +124,7 @@ export const proposalSelect = async (
   let proposals: IFormattedProposal[] = [];
   let placeholder = "Select proposal";
   try {
-    proposals = await getDAOPendingProposals(contractId);
+    proposals = await getDAOProposals(contractId);
   } catch (e) {
     console.log(e);
     placeholder = "Some error happened please try again!";
@@ -141,7 +160,9 @@ export const proposalSelect = async (
       .setOptions(
         proposals.filter(filter).map((p) => ({
           label: `Proposal #${p.id}`,
-          description: `description: ${p.memo}, amount: ${p["total-amount"]}`,
+          description: `description: ${p.memo}, amount: ${
+            p["total-amount"] / 1e6
+          }`,
           value: p.id.toString(),
 
           default: p.id.toString() === preSetValue,

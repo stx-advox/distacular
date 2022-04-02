@@ -83,7 +83,7 @@ client.on("interactionCreate", async (interaction) => {
         ),
         await proposalSelect(
           interaction.values[0],
-          (proposal) => !proposal.isPastDissent,
+          (proposal) => !proposal.isPastDissent && proposal.status === 0,
           `${SELECT_DISSENT_PROPOSAL_PREFIX}${dissentId}`
         ),
       ],

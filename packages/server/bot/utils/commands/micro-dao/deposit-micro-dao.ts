@@ -2,17 +2,20 @@ import {
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
+import { getBNSName } from "../../getNameAddress";
 import { MicroDAO } from "../../../schemas/micro-dao";
-import { getBNSName } from "../../getBNSName";
+
 import { amountBuilder } from "../common-cmds";
 
 export const getDAOChoices = async (memberAddress?: string) => {
   const DAOs = await MicroDAO.find(
-    memberAddress ? { members: memberAddress } : {}
+    memberAddress
+      ? { members: memberAddress, contractAddress: { $ne: null } }
+      : { contractAddress: { $ne: null } }
   ).exec();
-  let existingDAOs = DAOs.filter((dao) => dao.contractAddress);
-  let daoChoices: [daoName: string, daoContractAddress: string][] = [];
-  for (let choice of existingDAOs) {
+  const existingDAOs = DAOs.filter((dao) => dao.contractAddress);
+  const daoChoices: [daoName: string, daoContractAddress: string][] = [];
+  for (const choice of existingDAOs) {
     const prefix = await getBNSName(choice.contractAddress!.split(".")[0]);
     const newDAOName = `${prefix}.${choice.name}`;
     daoChoices.push([newDAOName, choice.contractAddress!]);

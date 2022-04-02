@@ -4,6 +4,7 @@ import { createMicroDAOCmd } from "./create-micro-dao-cmd";
 import { depositMicroDAOCmd } from "./deposit-micro-dao";
 import { buildDissentCmd } from "./dissent-cmd";
 import { buildExecuteFundingProposalCmd } from "./execute-funding-proposal-cmd";
+import { buildGetFundingProposalCmd } from "./get-proposal-data";
 
 export const microDAOCmd = async () => {
   const depositCmd = await depositMicroDAOCmd();
@@ -17,5 +18,6 @@ export const microDAOCmd = async () => {
     .addSubcommand(depositCmd)
     .addSubcommand(await createFundingProposal())
     .addSubcommand(await buildDissentCmd())
-    .addSubcommand(await buildExecuteFundingProposalCmd());
+    .addSubcommand(await buildExecuteFundingProposalCmd())
+    .addSubcommand(await buildGetFundingProposalCmd());
 };
