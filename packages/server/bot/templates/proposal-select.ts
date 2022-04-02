@@ -141,7 +141,7 @@ export const proposalSelect = async (
       .setOptions(
         proposals.filter(filter).map((p) => ({
           label: `Proposal #${p.id}`,
-          description: p.memo,
+          description: `description: ${p.memo}, amount: ${p["total-amount"]}`,
           value: p.id.toString(),
 
           default: p.id.toString() === preSetValue,

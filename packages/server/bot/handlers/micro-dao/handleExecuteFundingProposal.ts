@@ -88,7 +88,7 @@ client.on("interactionCreate", async (interaction) => {
         ),
         await proposalSelect(
           interaction.values[0],
-          (proposal) => !proposal.isPastDissent,
+          (proposal) => proposal.isPastDissent,
           `${SELECT_EXECUTE_PROPOSAL_PREFIX}${executeId}`
         ),
       ],
