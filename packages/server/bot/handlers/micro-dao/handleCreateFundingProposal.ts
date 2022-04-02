@@ -1,4 +1,3 @@
-import { MicroDAO } from "../../schemas/micro-dao";
 import { getNameAddressWithErrorHandling } from "../../utils/getNameAddress";
 import {
   CommandInteraction,
