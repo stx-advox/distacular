@@ -6,31 +6,41 @@ import {
 } from "discord.js";
 import { FundingProposal } from "../../schemas/funding-proposal";
 
+const getOption = (subcommand: CommandInteractionOption, key: string) => {
+  const options = subcommand.options;
+  if (options) {
+    const result = options.find((item) => item.name === key);
+    if (result?.value) {
+      return result.value;
+    }
+  }
+};
 export const handleCreateFundingProposal = async (
   subcommand: CommandInteractionOption,
   interaction: CommandInteraction
 ) => {
-  const daoContract = subcommand.options!.find(
-    (item) => item.name === "micro-dao-name"
-  )!.value as string;
+  if (!subcommand.options) {
+    return;
+  }
+  const daoContract = getOption(subcommand, "micro-dao-name");
 
-  const memo = subcommand.options!.find(
-    (item) => item.name === "funding-proposal-description"
-  )!.value as string;
-
-  if (memo.length > 50) {
+  const memo = getOption(subcommand, "funding-proposal-description");
+  if (typeof memo === "string" && memo.length > 50) {
     return interaction.editReply({
       content: "Description length must not exceed 50 characters!",
     });
   }
 
-  const granteesMap = subcommand.options!.reduce((acc, option) => {
+  const granteesMap = subcommand.options.reduce((acc, option) => {
     if (option.name.startsWith("grantee")) {
+      if (!option.member || !option.user) {
+        return acc;
+      }
       return {
         ...acc,
         [option.name]: {
           grantee:
-            (option.member! as GuildMember).nickname || option.user!.username,
+            (option.member as GuildMember).nickname || option.user.username,
           amount: 0,
         },
       };
@@ -43,7 +53,7 @@ export const handleCreateFundingProposal = async (
         ...acc,
         [memberKey]: {
           ...oldData,
-          amount: option.value! as number,
+          amount: Number(option.value),
         },
       };
     }
@@ -52,7 +62,7 @@ export const handleCreateFundingProposal = async (
 
   const addressesAmounts: [bnsName: string, amount: number][] = [];
 
-  for (let { grantee, amount } of Object.values(granteesMap)) {
+  for (const { grantee, amount } of Object.values(granteesMap)) {
     const data = await getNameAddressWithErrorHandling(grantee, interaction);
     if (!data) {
       return;
@@ -62,9 +72,9 @@ export const handleCreateFundingProposal = async (
     addressesAmounts.push([data.address, amountInuSTX]);
 
     const fundingProposal = new FundingProposal();
-    fundingProposal.daoContractAddress = daoContract;
+    fundingProposal.daoContractAddress = String(daoContract);
     fundingProposal.grants = addressesAmounts;
-    fundingProposal.memo = memo;
+    fundingProposal.memo = String(memo);
     await fundingProposal.save();
     await interaction.editReply({
       content: `Go to ${process.env.SITE_URL}/create-funding-proposal/${fundingProposal.id} to submit the tx to the stacks blockchain!`,

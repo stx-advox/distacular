@@ -13,7 +13,10 @@
     "license": "ISC",
     "devDependencies": {
         "@types/node": "^17.0.23",
+        "@typescript-eslint/eslint-plugin": "^5.17.0",
+        "@typescript-eslint/parser": "^5.17.0",
         "dotenv": "^10.0.0",
+        "eslint": "^8.12.0",
         "lerna": "^4.0.0",
         "ts-node": "^10.4.0",
         "ts-node-dev": "^1.1.8",
@@ -35,5 +38,8 @@
         "express": "^4.17.3",
         "mongoose": "^6.2.8",
         "sourcecred": "^0.11.1"
+    },
+    "eslintConfig": {
+        "extends": []
     }
 }

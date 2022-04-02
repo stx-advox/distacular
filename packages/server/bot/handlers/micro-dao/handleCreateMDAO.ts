@@ -10,16 +10,16 @@ export const handleCreateMicroDAO = async (
   subcommand: CommandInteractionOption,
   interaction: CommandInteraction
 ) => {
-  const name = subcommand.options!.find((option) => option.name === "name")!
-    .value as string;
+  const name = subcommand.options?.find((option) => option.name === "name")
+    ?.value as string;
 
   const members = [
     interaction.member as GuildMember,
-    ...(subcommand
-      .options!.filter(
+    ...(subcommand.options
+      ?.filter(
         (option) => option.type === "USER" && /^member\d$/.test(option.name)
       )
-      .map((option) => option.member!) as GuildMember[]),
+      .map((option) => option.member) as GuildMember[]),
   ];
 
   if (!/[\w-]{3,50}/.test(name)) {
@@ -45,7 +45,7 @@ export const handleCreateMicroDAO = async (
 
   const memberAddresses: string[] = [];
 
-  for (let member of memberNames) {
+  for (const member of memberNames) {
     const data = await getNameAddressWithErrorHandling(member, interaction);
     if (!data) {
       return;

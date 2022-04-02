@@ -1,6 +1,6 @@
 import { Configuration, NamesApi } from "@stacks/blockchain-api-client";
 import fetch from "cross-fetch";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SelectMenuInteraction } from "discord.js";
 
 interface INameResponse {
   address: string;
@@ -15,7 +15,7 @@ interface INameResponse {
 // I know... i hate myself
 export const getNameAddressWithErrorHandling = async (
   name: string,
-  interaction: CommandInteraction
+  interaction: CommandInteraction | SelectMenuInteraction
 ) => {
   const namesAPI = new NamesApi(
     new Configuration({

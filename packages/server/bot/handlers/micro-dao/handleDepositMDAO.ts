@@ -4,8 +4,8 @@ import {
   MessageActionRow,
   GuildMember,
   MessageSelectMenu,
-  Interaction,
   MessageButton,
+  SelectMenuInteraction,
 } from "discord.js";
 import { checkSTXAmount } from "../send-stx";
 import { getNameAddressWithErrorHandling } from "../../utils/getNameAddress";
@@ -18,16 +18,16 @@ interface IDepositAction {
 }
 
 const SELECT_DAO_DEPOSIT_PREFIX = "select-deposit-dao-";
-const CONFIRM_DEPOSIT_PREFIX = "confirm-deposit-";
 
 const schema = new Schema<IDepositAction>({
   amount: { required: true, type: Number },
   contractAddress: { required: false, type: String },
 });
 
-const buildDAOSelect = async (
+export const buildDAOSelect = async (
   action_id: string,
   address: string,
+  prefix = SELECT_DAO_DEPOSIT_PREFIX,
   selectedValue?: string,
   disabled = false
 ) => {
@@ -35,8 +35,8 @@ const buildDAOSelect = async (
 
   return new MessageActionRow().addComponents([
     new MessageSelectMenu()
-      .setCustomId(`${SELECT_DAO_DEPOSIT_PREFIX}${action_id!}`)
-      .setPlaceholder(`Select DAO to deposit`)
+      .setCustomId(`${prefix}${action_id}`)
+      .setPlaceholder(`Select DAO`)
       .setMaxValues(1)
       .setMinValues(1)
       .setOptions(
@@ -53,19 +53,45 @@ const buildDAOSelect = async (
 
 const DepositAction = model<IDepositAction>("DepositAction", schema);
 
-export const getBNSFromInteraction = (interaction: Interaction) => {
+export const markSelected = (
+  interaction: SelectMenuInteraction,
+  actionRow: MessageActionRow,
+  disabled = false,
+  defaultValue = ""
+) => {
+  actionRow.components = actionRow.components.map((component) => {
+    if (component instanceof MessageSelectMenu) {
+      component.setDisabled(disabled);
+      component.options = component.options.map((option) => {
+        option.default =
+          option.value === (defaultValue || interaction.values[0]);
+        return option;
+      });
+    }
+    return component;
+  });
+
+  return actionRow;
+};
+export const getBNSFromInteraction = (
+  interaction: CommandInteraction | SelectMenuInteraction
+) => {
   const userName =
     (interaction.member as GuildMember).nickname || interaction.user.username;
-  return getNameAddressWithErrorHandling(userName, interaction as any);
+  return getNameAddressWithErrorHandling(userName, interaction);
 };
 export const handleDepositMicroDAO = async (
   subcommand: CommandInteractionOption,
   interaction: CommandInteraction
 ) => {
-  const options = subcommand.options!;
+  const options = subcommand.options;
 
-  const amount = options.find((item) => item.name === "amount")!
-    .value as number;
+  if (!options) {
+    return;
+  }
+
+  const amount = options.find((item) => item.name === "amount")
+    ?.value as number;
   if (checkSTXAmount(amount, interaction)) {
     return null;
   }
@@ -83,7 +109,7 @@ export const handleDepositMicroDAO = async (
 
   interaction.editReply({
     content: `Select the DAO you would deposit to from your DAOs`,
-    components: [await buildDAOSelect(action.id!, userAddress.address!)],
+    components: [await buildDAOSelect(action.id, userAddress.address)],
   });
 };
 
@@ -97,25 +123,15 @@ client.on("interactionCreate", async (interaction) => {
       ""
     );
     const confirmButton = interaction.message
-      .components![1] as MessageActionRow | null;
+      ?.components?.[1] as MessageActionRow | null;
 
-    const getCachedDAOsCmp = (disabled = false) => {
-      const daoSelect = interaction.message.components![0] as MessageActionRow;
-      daoSelect.components = daoSelect.components.map((component) => {
-        if (component instanceof MessageSelectMenu) {
-          component.setDisabled(disabled);
-          component.options = component.options.map((option) => {
-            option.default = option.value === interaction.values[0];
-            return option;
-          });
-        }
-        return component;
-      });
-
-      return daoSelect;
-    };
-
-    const components = [getCachedDAOsCmp(true)];
+    const components = [
+      markSelected(
+        interaction,
+        interaction.message.components?.[0] as MessageActionRow,
+        true
+      ),
+    ];
     if (confirmButton) {
       confirmButton.components = confirmButton.components.map((component) =>
         component.setDisabled()
@@ -144,7 +160,10 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.editReply({
         content: `Confirm depositing to the selected DAO with the amount of ${action.amount} STX!`,
         components: [
-          getCachedDAOsCmp(),
+          markSelected(
+            interaction,
+            interaction.message.components?.[0] as MessageActionRow
+          ),
           new MessageActionRow().addComponents([
             new MessageButton({
               style: "LINK",
