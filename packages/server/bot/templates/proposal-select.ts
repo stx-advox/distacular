@@ -98,7 +98,7 @@ export const getDAOPendingProposals = async (contractId: string) => {
 
 export const proposalSelect = async (
   contractId: string,
-  includePastDissent = true,
+  filter: (proposal: IFormattedProposal) => boolean = () => true,
   custom_id = "",
   preSetValue = ""
 ) => {
@@ -139,15 +139,13 @@ export const proposalSelect = async (
       .setMinValues(1)
       .setPlaceholder(placeholder)
       .setOptions(
-        proposals
-          .filter((p) => includePastDissent || !p.isPastDissent)
-          .map((p) => ({
-            label: `Proposal #${p.id}`,
-            description: p.memo,
-            value: p.id.toString(),
+        proposals.filter(filter).map((p) => ({
+          label: `Proposal #${p.id}`,
+          description: p.memo,
+          value: p.id.toString(),
 
-            default: p.id.toString() === preSetValue,
-          }))
+          default: p.id.toString() === preSetValue,
+        }))
       )
       .setDisabled(isDisabled),
   ]);

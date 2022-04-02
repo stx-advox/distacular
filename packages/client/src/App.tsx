@@ -10,7 +10,8 @@ import CreateMicroDAOView from "./routes/CreateMicroDAO";
 import MicroDAODepositView from "./routes/mDAODeposit";
 import { userSession } from "./constants/stacks-session";
 import { CreateFundingProposalView } from "./routes/CreateFundingProposal";
-import { DissentView } from "./routes/Dissent";
+import DissentView from "./routes/Dissent";
+import ExecuteFundingProposalView from "./routes/ExcuteFundingProposal";
 
 function App() {
   const authOptions: AuthOptions = {
@@ -46,6 +47,10 @@ function App() {
             <Route
               path="/dissent-micro-dao/:contractAddress/:proposalId"
               element={<DissentView />}
+            />
+            <Route
+              path="/execute-funding-proposal/:contractAddress/:proposalId"
+              element={<ExecuteFundingProposalView />}
             />
             {/* <Route index element={<Home />} /> */}
             {/* <Route path="teams" element={<Teams />}>

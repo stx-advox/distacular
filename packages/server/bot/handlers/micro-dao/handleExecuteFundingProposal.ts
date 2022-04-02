@@ -13,22 +13,25 @@ import { Schema, model } from "mongoose";
 import { client } from "../../client";
 import { proposalSelect } from "../../templates/proposal-select";
 
-const SELECT_DISSENT_DAO_PREFIX = `select-dissent-dao-`;
-const SELECT_DISSENT_PROPOSAL_PREFIX = `select-dissent-proposal-`;
+const SELECT_EXECUTE_DAO_PREFIX = `select-execute-dao-`;
+const SELECT_EXECUTE_PROPOSAL_PREFIX = `select-execute-proposal-`;
 
-interface IDissentAction {
+interface IExecuteFundingProposalAction {
   contractId?: string;
   proposalId?: string;
 }
 
-const schema = new Schema<IDissentAction>({
+const schema = new Schema<IExecuteFundingProposalAction>({
   contractId: { type: String, required: false },
   proposalId: { type: String, required: false },
 });
 
-const DissentAction = model<IDissentAction>("DissentAction", schema);
+const ExecuteFundingProposalAction = model<IExecuteFundingProposalAction>(
+  "ExecuteFundingProposalAction",
+  schema
+);
 
-export const handleDissent = async (
+export const handleExecuteFundingProposal = async (
   subcommand: CommandInteractionOption,
   interaction: CommandInteraction
 ) => {
@@ -38,7 +41,7 @@ export const handleDissent = async (
     return;
   }
 
-  const action = new DissentAction();
+  const action = new ExecuteFundingProposalAction();
 
   await action.save();
   interaction.editReply({
@@ -47,7 +50,7 @@ export const handleDissent = async (
       await buildDAOSelect(
         action.id,
         userAddress.address,
-        SELECT_DISSENT_DAO_PREFIX
+        SELECT_EXECUTE_DAO_PREFIX
       ),
     ],
   });
@@ -56,14 +59,16 @@ export const handleDissent = async (
 client.on("interactionCreate", async (interaction) => {
   if (
     interaction.isSelectMenu() &&
-    interaction.customId.startsWith(SELECT_DISSENT_DAO_PREFIX)
+    interaction.customId.startsWith(SELECT_EXECUTE_DAO_PREFIX)
   ) {
-    const dissentId = interaction.customId.replace(
-      SELECT_DISSENT_DAO_PREFIX,
+    const executeId = interaction.customId.replace(
+      SELECT_EXECUTE_DAO_PREFIX,
       ""
     );
 
-    const action = await DissentAction.findById(dissentId).exec();
+    const action = await ExecuteFundingProposalAction.findById(
+      executeId
+    ).exec();
     if (!action) {
       return;
     }
@@ -75,7 +80,7 @@ client.on("interactionCreate", async (interaction) => {
     action.save();
 
     interaction.editReply({
-      content: `Now select the proposal you want to dissent`,
+      content: `Now select the proposal you want to execute`,
       components: [
         markSelected(
           interaction,
@@ -84,20 +89,22 @@ client.on("interactionCreate", async (interaction) => {
         await proposalSelect(
           interaction.values[0],
           (proposal) => !proposal.isPastDissent,
-          `${SELECT_DISSENT_PROPOSAL_PREFIX}${dissentId}`
+          `${SELECT_EXECUTE_PROPOSAL_PREFIX}${executeId}`
         ),
       ],
     });
   } else if (
     interaction.isSelectMenu() &&
-    interaction.customId.startsWith(SELECT_DISSENT_PROPOSAL_PREFIX)
+    interaction.customId.startsWith(SELECT_EXECUTE_PROPOSAL_PREFIX)
   ) {
-    const dissentId = interaction.customId.replace(
-      SELECT_DISSENT_PROPOSAL_PREFIX,
+    const executeId = interaction.customId.replace(
+      SELECT_EXECUTE_PROPOSAL_PREFIX,
       ""
     );
 
-    const action = await DissentAction.findById(dissentId).exec();
+    const action = await ExecuteFundingProposalAction.findById(
+      executeId
+    ).exec();
     if (!action) {
       return;
     }
@@ -109,7 +116,7 @@ client.on("interactionCreate", async (interaction) => {
     await action.save();
 
     interaction.editReply({
-      content: `Now select the proposal you want to dissent`,
+      content: `Now select the proposal you want to execute`,
       components: [
         markSelected(
           interaction,
@@ -127,8 +134,8 @@ client.on("interactionCreate", async (interaction) => {
         new MessageActionRow().addComponents([
           new MessageButton({
             style: "LINK",
-            url: `${process.env.SITE_URL}/dissent-micro-dao/${action.contractId}/${action.proposalId}`,
-            label: "Confirm Dissent Tx",
+            url: `${process.env.SITE_URL}/execute-funding-proposal/${action.contractId}/${action.proposalId}`,
+            label: "Confirm Execute Tx",
           }),
         ]),
       ],

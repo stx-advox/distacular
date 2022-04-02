@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
-const DissentView = () => {
+const ExecuteFundingProposalView = () => {
   const { contractAddress, proposalId } = useParams<{
     contractAddress: string;
     proposalId: string;
@@ -13,13 +13,13 @@ const DissentView = () => {
 
   const [txId, setTxId] = useState("");
 
-  const dissent = useCallback(async () => {
+  const execute = useCallback(async () => {
     if (contractAddress && proposalId) {
       const [address, name] = contractAddress.split(".");
       openContractCall({
         contractAddress: address,
         contractName: name,
-        functionName: "dissent",
+        functionName: "execute-funding-proposal",
         functionArgs: [uintCV(proposalId)],
         network: new StacksMainnet(),
         onFinish(data) {
@@ -41,8 +41,8 @@ const DissentView = () => {
             Check the tx here!
           </Button>
         ) : (
-          <Button onClick={dissent} size="lg" variant="primary">
-            Dissent
+          <Button onClick={execute} size="lg" variant="primary">
+            Execute Funding Proposal
           </Button>
         )}
       </header>
@@ -52,4 +52,4 @@ const DissentView = () => {
   );
 };
 
-export default DissentView;
+export default ExecuteFundingProposalView;
