@@ -1,6 +1,7 @@
 import {
   CommandInteraction,
   CommandInteractionOption,
+  Guild,
   MessageActionRow,
   MessageButton,
 } from "discord.js";
@@ -22,16 +23,15 @@ const SELECT_GET_PROPOSAL_PREFIX = `select-get-proposal-`;
 
 const ProposalStatus = ["Pending execution", "Passed", "Failed"];
 
-const getBNSDiscordMember = async (name: string) => {
-  const guild = await client.guilds.fetch(process.env.GUILD_ID!);
+const getBNSDiscordMember = async (guild: Guild, name: string) => {
   const results = await guild.members.search({ query: name });
   return results.find(
     (member) => member.nickname === name || member.user.username === name
   );
 };
 
-const mentionBNSUser = async (name: string) => {
-  const member = await getBNSDiscordMember(name);
+const mentionBNSUser = async (guild: Guild, name: string) => {
+  const member = await getBNSDiscordMember(guild, name);
 
   return member ? `<@${member.user.id}>` : name;
 };
@@ -93,12 +93,16 @@ client.on("interactionCreate", async (interaction) => {
     const proposal = await getProposal(contractId, +proposalId);
 
     if (proposal) {
-      const name = await mentionBNSUser(await getBNSName(proposal.proposer));
+      const name = await mentionBNSUser(
+        interaction.guild as Guild,
+        await getBNSName(proposal.proposer)
+      );
 
       const targetsFormatted = await Promise.all(
         proposal.targets.map(
           async (item) =>
             `User: ${await mentionBNSUser(
+              interaction.guild as Guild,
               await getBNSName(item.address)
             )} for a grant amount total of ${item.amount / 1e6} STX`
         )

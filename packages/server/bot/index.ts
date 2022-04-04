@@ -14,8 +14,7 @@ client.login(process.env.DISCORD_BOT_TOKEN);
 client.on("interactionCreate", async (interaction: Interaction) => {
   if (
     !interaction.isCommand() ||
-    interaction.commandName !== process.env.COMMAND_NAME ||
-    interaction.guildId !== process.env.GUILD_ID
+    interaction.commandName !== process.env.COMMAND_NAME
   ) {
     return;
   }
