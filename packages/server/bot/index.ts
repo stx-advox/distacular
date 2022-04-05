@@ -1,4 +1,4 @@
-import { Client, Intents, Interaction } from "discord.js";
+import { Interaction } from "discord.js";
 
 import { config } from "dotenv";
 import { client } from "./client";
@@ -12,28 +12,15 @@ import { deployCommands } from "./utils/deploy-commands";
 client.login(process.env.DISCORD_BOT_TOKEN);
 
 client.on("interactionCreate", async (interaction: Interaction) => {
-  if (
-    !interaction.isCommand() ||
-    interaction.commandName !== process.env.COMMAND_NAME
-  ) {
+  if (!interaction.isCommand()) {
     return;
   }
-
-  const commandData = interaction.options.data;
-
-  const subcommand = commandData[0];
-
   await interaction.deferReply({ ephemeral: true });
 
-  if (process.env.NODE_ENV === "production" && subcommand.name === "send_stx") {
+  if (interaction.commandName === "send-stx") {
     handleSendSTX(interaction);
-  } else if (subcommand.name === "micro-dao") {
+  } else if (interaction.commandName === "micro-dao") {
     handleMicroDAO(interaction);
-  } else {
-    interaction.reply({
-      ephemeral: true,
-      content: "Got it!!",
-    });
   }
 });
 

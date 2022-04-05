@@ -130,12 +130,13 @@ export const proposalSelect = async (
     placeholder = "Some error happened please try again!";
   }
 
+  proposals = proposals.filter(filter);
   const actionRow = new MessageActionRow();
 
   let isDisabled = false;
 
   if (proposals.length === 0) {
-    placeholder = "This DAO has no pending proposals";
+    placeholder = "404!, use get-proposal-data to view all proposals";
     proposals = [
       {
         id: 12,
@@ -158,7 +159,7 @@ export const proposalSelect = async (
       .setMinValues(1)
       .setPlaceholder(placeholder)
       .setOptions(
-        proposals.filter(filter).map((p) => ({
+        proposals.map((p) => ({
           label: `Proposal #${p.id}`,
           description: `description: ${p.memo}, amount: ${
             p["total-amount"] / 1e6

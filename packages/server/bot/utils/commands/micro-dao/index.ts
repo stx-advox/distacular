@@ -1,4 +1,4 @@
-import { SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { createFundingProposal } from "./create-funding-proposal-cmd";
 import { createMicroDAOCmd } from "./create-micro-dao-cmd";
 import { depositMicroDAOCmd } from "./deposit-micro-dao";
@@ -9,7 +9,7 @@ import { buildGetFundingProposalCmd } from "./get-proposal-data";
 export const microDAOCmd = async () => {
   const depositCmd = await depositMicroDAOCmd();
 
-  return new SlashCommandSubcommandGroupBuilder()
+  return new SlashCommandBuilder()
     .setName("micro-dao")
     .setDescription(
       "The mDAO contract interface offers all the options to create and manage micro mDAOs"

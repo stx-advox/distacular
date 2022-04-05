@@ -10,19 +10,9 @@ import {
 import { checkSTXAmount } from "../send-stx";
 import { getNameAddressWithErrorHandling } from "../../utils/getNameAddress";
 import { getDAOChoices } from "../../utils/commands/micro-dao/deposit-micro-dao";
-import { Schema, model } from "mongoose";
 import { client } from "../../client";
-interface IDepositAction {
-  amount: number;
-  contractAddress?: string;
-}
 
 const SELECT_DAO_DEPOSIT_PREFIX = "select-deposit-dao-";
-
-const schema = new Schema<IDepositAction>({
-  amount: { required: true, type: Number },
-  contractAddress: { required: false, type: String },
-});
 
 export const buildDAOSelect = async (
   action_id: string,
@@ -50,8 +40,6 @@ export const buildDAOSelect = async (
       .setDisabled(disabled),
   ]);
 };
-
-const DepositAction = model<IDepositAction>("DepositAction", schema);
 
 export const markSelected = (
   interaction: SelectMenuInteraction,
@@ -101,15 +89,9 @@ export const handleDepositMicroDAO = async (
     return;
   }
 
-  const action = new DepositAction();
-
-  action.amount = amount;
-
-  await action.save();
-
   interaction.editReply({
     content: `Select the DAO you would deposit to from your DAOs`,
-    components: [await buildDAOSelect(action.id, userAddress.address)],
+    components: [await buildDAOSelect(`${amount}`, userAddress.address)],
   });
 };
 
@@ -118,10 +100,8 @@ client.on("interactionCreate", async (interaction) => {
     interaction.isSelectMenu() &&
     interaction.customId.startsWith(SELECT_DAO_DEPOSIT_PREFIX)
   ) {
-    const actionId = interaction.customId.replace(
-      SELECT_DAO_DEPOSIT_PREFIX,
-      ""
-    );
+    const amount = interaction.customId.replace(SELECT_DAO_DEPOSIT_PREFIX, "");
+
     const confirmButton = interaction.message
       ?.components?.[1] as MessageActionRow | null;
 
@@ -145,20 +125,17 @@ client.on("interactionCreate", async (interaction) => {
       components,
     });
 
-    const action = await DepositAction.findById(actionId).exec();
-
     const userAddress = await getBNSFromInteraction(interaction);
 
     if (!userAddress) {
       return;
     }
 
-    if (action) {
-      action.contractAddress = interaction.values[0];
-      await action.save();
+    if (amount) {
+      const contractAddress = interaction.values[0];
 
       await interaction.editReply({
-        content: `Confirm depositing to the selected DAO with the amount of ${action.amount} STX!`,
+        content: `Confirm depositing to the selected DAO with the amount of ${amount} STX!`,
         components: [
           markSelected(
             interaction,
@@ -167,9 +144,9 @@ client.on("interactionCreate", async (interaction) => {
           new MessageActionRow().addComponents([
             new MessageButton({
               style: "LINK",
-              url: `${process.env.SITE_URL}/deposit-micro-dao/${
-                action.contractAddress
-              }/${action.amount * 1e6}`,
+              url: `${
+                process.env.SITE_URL
+              }/deposit-micro-dao/${contractAddress}/${Number(amount) * 1e6}`,
               label: "Confirm Tx",
             }),
           ]),

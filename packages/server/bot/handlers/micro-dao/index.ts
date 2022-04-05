@@ -9,7 +9,7 @@ import { handleGetFundingProposal } from "./handleGetProposal";
 export const handleMicroDAO = async (interaction: CommandInteraction) => {
   const commandData = interaction.options.data;
 
-  const subcommand = commandData[0]?.options?.[0];
+  const subcommand = commandData[0];
 
   if (!subcommand) {
     return;

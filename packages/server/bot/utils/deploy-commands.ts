@@ -10,13 +10,9 @@ config();
 export const deployCommands = async (guild: string = process.env.GUILD_ID!) => {
   await connectDB();
 
-  const commands = [
-    new SlashCommandBuilder()
-      .setName("distacular")
-      .setDescription("Use to interact with stacks through your discord")
-      .addSubcommand(sendSTXCmd)
-      .addSubcommandGroup(await microDAOCmd()),
-  ].map((command) => command.toJSON());
+  const commands = [sendSTXCmd, await microDAOCmd()].map((command) =>
+    command.toJSON()
+  );
 
   const rest = new REST({ version: "9" }).setToken(
     process.env.DISCORD_BOT_TOKEN!
