@@ -1,0 +1,22 @@
+{
+    "name": "@distacular/common",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "author": "hz <13457698+hozzjss@users.noreply.github.com>",
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/stx-advox/distacular.git"
+    },
+    "scripts": {
+        "postinstall": "tsc"
+    },
+    "devDependencies": {
+        "typescript": "^4.6.3"
+    },
+    "dependencies": {
+        "@stacks/blockchain-api-client": "^3.0.3",
+        "@stacks/transactions": "^3.5.0"
+    }
+}

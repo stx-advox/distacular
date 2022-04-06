@@ -1,9 +1,30 @@
 import { openContractCall } from "@stacks/connect-react";
 import { StacksMainnet } from "@stacks/network";
-import { uintCV } from "@stacks/transactions";
-import { useState, useCallback } from "react";
+import {
+  FungibleConditionCode,
+  makeContractSTXPostCondition,
+  uintCV,
+} from "@stacks/transactions";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import { getProposal, IFormattedProposal } from "@distacular/common";
+
+const useProposal = (contractAddress: string, proposalId: string) => {
+  const [proposal, setProposal] = useState<IFormattedProposal>();
+
+  const loadProposal = useCallback(async () => {
+    const proposal = await getProposal(contractAddress, Number(proposalId));
+    if (proposal) {
+      setProposal(proposal);
+    }
+  }, [contractAddress, proposalId]);
+
+  useEffect(() => {
+    loadProposal();
+  }, [loadProposal]);
+  return proposal;
+};
 
 const ExecuteFundingProposalView = () => {
   const { contractAddress, proposalId } = useParams<{
@@ -13,8 +34,10 @@ const ExecuteFundingProposalView = () => {
 
   const [txId, setTxId] = useState("");
 
+  const proposal = useProposal(contractAddress as string, proposalId as string);
+
   const execute = useCallback(async () => {
-    if (contractAddress && proposalId) {
+    if (contractAddress && proposalId && proposal) {
       const [address, name] = contractAddress.split(".");
       openContractCall({
         contractAddress: address,
@@ -22,12 +45,20 @@ const ExecuteFundingProposalView = () => {
         functionName: "execute-funding-proposal",
         functionArgs: [uintCV(proposalId)],
         network: new StacksMainnet(),
+        postConditions: [
+          makeContractSTXPostCondition(
+            address,
+            name,
+            FungibleConditionCode.Equal,
+            proposal["total-amount"]
+          ),
+        ],
         onFinish(data) {
           setTxId(data.txId);
         },
       });
     }
-  }, [contractAddress, proposalId]);
+  }, [contractAddress, proposal, proposalId]);
 
   return contractAddress ? (
     <div className="App">
