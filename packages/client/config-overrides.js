@@ -21,6 +21,9 @@ module.exports = function override(config, env) {
         new webpack.ProvidePlugin({
             Buffer: ["buffer", "Buffer"],
         }),
+        new webpack.DefinePlugin({
+            "process.env": env,
+        }),
     ];
 
     return config;

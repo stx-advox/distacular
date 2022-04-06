@@ -8,10 +8,12 @@ import {
 import { useState, useCallback, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import { getProposal, IFormattedProposal } from "@distacular/common";
+import { getProposal } from "@distacular/common";
+
+console.log(process.env);
 
 const useProposal = (contractAddress: string, proposalId: string) => {
-  const [proposal, setProposal] = useState<IFormattedProposal>();
+  const [proposal, setProposal] = useState<any>();
 
   const loadProposal = useCallback(async () => {
     const proposal = await getProposal(contractAddress, Number(proposalId));

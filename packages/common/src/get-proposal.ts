@@ -27,7 +27,7 @@ export interface IClarityValue {
   value: any;
 }
 
-export const unpackCV = (proposal: IClarityValue) => {
+export const unpackCV = (proposal: IClarityValue): any => {
   switch (proposal.type) {
     case "uint":
     case "int":
@@ -50,7 +50,7 @@ export const unpackCV = (proposal: IClarityValue) => {
 };
 
 const config = new Configuration({
-  basePath: process.env.STACKS_URL,
+  basePath: process.env.REACT_APP_STACKS_URL,
 });
 
 export const SCApi = new SmartContractsApi(config);

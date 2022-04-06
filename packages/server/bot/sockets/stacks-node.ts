@@ -5,7 +5,7 @@ import { deployCommands } from "../utils/deploy-commands";
 import { MicroDAO } from "../schemas/micro-dao";
 
 export const listenToSocket = async () => {
-  const socket = await connectWebSocketClient(process.env.STACKS_URL);
+  const socket = await connectWebSocketClient(process.env.REACT_APP_STACKS_URL);
   socket.subscribeMempool((event) => {
     if (event.tx_type === "smart_contract") {
       const contract = event.smart_contract;

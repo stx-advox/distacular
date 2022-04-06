@@ -2,11 +2,7 @@ import { Router } from "express";
 import { SendSTX } from "../bot/schemas/tx";
 import { Document } from "mongoose";
 import { IMicroDAO, MicroDAO } from "../bot/schemas/micro-dao";
-import {
-  TransactionsApi,
-  SmartContractsApi,
-  Configuration,
-} from "@stacks/blockchain-api-client";
+import { TransactionsApi, Configuration } from "@stacks/blockchain-api-client";
 import { SmartContractTransaction } from "@stacks/stacks-blockchain-api-types";
 import fetch from "cross-fetch";
 import { deployCommands } from "../bot/utils/deploy-commands";
@@ -45,7 +41,7 @@ apiRouter.put<any, { daoId: string }, any, { txId: string }>(
     if (txId) {
       const config = new Configuration({
         fetchApi: fetch,
-        basePath: process.env.STACKS_URL,
+        basePath: process.env.REACT_APP_STACKS_URL,
       });
       const txAPI = new TransactionsApi(config);
       let txData;

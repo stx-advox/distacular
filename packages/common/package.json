@@ -18,5 +18,8 @@
     "dependencies": {
         "@stacks/blockchain-api-client": "^3.0.3",
         "@stacks/transactions": "^3.5.0"
-    }
+    },
+    "main": "lib/index.js",
+    "browser": "lib/index.js",
+    "module": "lib/index.js"
 }

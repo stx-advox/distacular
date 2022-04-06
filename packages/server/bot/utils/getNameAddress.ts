@@ -5,7 +5,7 @@ import { CommandInteraction, SelectMenuInteraction } from "discord.js";
 const namesAPI = new NamesApi(
   new Configuration({
     fetchApi: fetch,
-    basePath: process.env.STACKS_URL,
+    basePath: process.env.REACT_APP_STACKS_URL,
   })
 );
 // I know... i hate myself
