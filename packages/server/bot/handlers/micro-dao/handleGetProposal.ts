@@ -11,12 +11,9 @@ import {
   markSelected,
 } from "./handleDepositMDAO";
 import { client } from "../../client";
-import {
-  getProposal,
-  infoApi,
-  proposalSelect,
-} from "../../templates/proposal-select";
+import { proposalSelect } from "../../templates/proposal-select";
 import { getBNSName } from "../../utils/getNameAddress";
+import { getProposal, infoApi } from "@distacular/common";
 
 const SELECT_GET_DAO_PREFIX = `select-get-dao-`;
 const SELECT_GET_PROPOSAL_PREFIX = `select-get-proposal-`;

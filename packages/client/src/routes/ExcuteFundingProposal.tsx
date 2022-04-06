@@ -10,8 +10,6 @@ import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { getProposal } from "@distacular/common";
 
-console.log(process.env);
-
 const useProposal = (contractAddress: string, proposalId: string) => {
   const [proposal, setProposal] = useState<any>();
 
