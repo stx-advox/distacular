@@ -1,7 +1,4 @@
-import {
-  SlashCommandStringOption,
-  SlashCommandSubcommandBuilder,
-} from "@discordjs/builders";
+import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { getBNSName } from "../../getNameAddress";
 import { MicroDAO } from "../../../schemas/micro-dao";
 
@@ -16,27 +13,16 @@ export const getDAOChoices = async (memberAddress?: string) => {
   const existingDAOs = DAOs.filter((dao) => dao.contractAddress);
   const daoChoices: [daoName: string, daoContractAddress: string][] = [];
   for (const choice of existingDAOs) {
-    const prefix = await getBNSName(choice.contractAddress!.split(".")[0]);
+    const prefix = await getBNSName(
+      (choice.contractAddress as string).split(".")[0]
+    );
     const newDAOName = `${prefix}.${choice.name}`;
-    daoChoices.push([newDAOName, choice.contractAddress!]);
+    daoChoices.push([newDAOName, choice.contractAddress as string]);
   }
   return daoChoices;
 };
 
-export const buildDAOField = async () => {
-  return new SlashCommandStringOption()
-    .setName("micro-dao-name")
-    .setDescription("Pick one of the DAOs")
-    .addChoices(await getDAOChoices())
-    .setRequired(true);
-};
-
-export const depositMicroDAOCmd = async () => {
-  return (
-    new SlashCommandSubcommandBuilder()
-      .setName("deposit")
-      .setDescription("Deposit or donate to a micro dao")
-      // .addStringOption(await buildDAOField())
-      .addNumberOption(amountBuilder)
-  );
-};
+export const depositMicroDAOCmd = new SlashCommandSubcommandBuilder()
+  .setName("deposit")
+  .setDescription("Deposit or donate to a micro dao")
+  .addNumberOption(amountBuilder);

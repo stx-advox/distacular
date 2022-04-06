@@ -7,7 +7,7 @@ export interface IFundingProposal {
 }
 
 const schema = new Schema<IFundingProposal>({
-  daoContractAddress: { required: true, type: String },
+  daoContractAddress: { required: false, type: String },
   grants: { required: true, type: [[String, Number]] },
   memo: { required: true, type: String },
 });

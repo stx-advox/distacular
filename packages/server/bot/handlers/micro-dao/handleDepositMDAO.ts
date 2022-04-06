@@ -17,7 +17,7 @@ const SELECT_DAO_DEPOSIT_PREFIX = "select-deposit-dao-";
 export const buildDAOSelect = async (
   action_id: string,
   address: string,
-  prefix = SELECT_DAO_DEPOSIT_PREFIX,
+  prefix: string,
   selectedValue?: string,
   disabled = false
 ) => {
@@ -91,7 +91,13 @@ export const handleDepositMicroDAO = async (
 
   interaction.editReply({
     content: `Select the DAO you would deposit to from your DAOs`,
-    components: [await buildDAOSelect(`${amount}`, userAddress.address)],
+    components: [
+      await buildDAOSelect(
+        `${amount}`,
+        userAddress.address,
+        SELECT_DAO_DEPOSIT_PREFIX
+      ),
+    ],
   });
 };
 

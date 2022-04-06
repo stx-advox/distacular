@@ -4,7 +4,6 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandUserOption,
 } from "@discordjs/builders";
-import { buildDAOField } from "./deposit-micro-dao";
 
 const createMultipleUserAmountPairs = (cmd: SlashCommandSubcommandBuilder) => {
   for (let i = 1; i <= 10; i += 1) {
@@ -26,13 +25,12 @@ const createMultipleUserAmountPairs = (cmd: SlashCommandSubcommandBuilder) => {
   }
 };
 
-const createFundingProposal = async () => {
+const createFundingProposal = () => {
   const cmd = new SlashCommandSubcommandBuilder()
     .setName("create-funding-proposal")
     .setDescription(
       "Create a proposal to send money to one or more people (at least one at most 10)"
     )
-    .addStringOption(await buildDAOField())
     .addStringOption(
       new SlashCommandStringOption()
         .setName("funding-proposal-description")

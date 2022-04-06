@@ -3,8 +3,18 @@ import {
   CommandInteraction,
   CommandInteractionOption,
   GuildMember,
+  MessageActionRow,
+  MessageButton,
 } from "discord.js";
 import { FundingProposal } from "../../schemas/funding-proposal";
+import {
+  getBNSFromInteraction,
+  buildDAOSelect,
+  markSelected,
+} from "./handleDepositMDAO";
+import { client } from "../../client";
+
+const SELECT_DAO_FP = `select-dao-fp-`;
 
 const getOption = (subcommand: CommandInteractionOption, key: string) => {
   const options = subcommand.options;
@@ -22,7 +32,6 @@ export const handleCreateFundingProposal = async (
   if (!subcommand.options) {
     return;
   }
-  const daoContract = getOption(subcommand, "micro-dao-name");
 
   const memo = getOption(subcommand, "funding-proposal-description");
   if (typeof memo === "string" && memo.length > 50) {
@@ -72,12 +81,63 @@ export const handleCreateFundingProposal = async (
     addressesAmounts.push([data.address, amountInuSTX]);
 
     const fundingProposal = new FundingProposal();
-    fundingProposal.daoContractAddress = String(daoContract);
     fundingProposal.grants = addressesAmounts;
     fundingProposal.memo = String(memo);
     await fundingProposal.save();
-    await interaction.editReply({
-      content: `Go to ${process.env.SITE_URL}/create-funding-proposal/${fundingProposal.id} to submit the tx to the stacks blockchain!`,
+    const userAddress = await getBNSFromInteraction(interaction);
+
+    if (!userAddress) {
+      return;
+    }
+
+    interaction.editReply({
+      content: `Select the DAO you would deposit to from your DAOs`,
+      components: [
+        await buildDAOSelect(
+          fundingProposal.id,
+          userAddress.address,
+          SELECT_DAO_FP
+        ),
+      ],
     });
   }
 };
+
+client.on("interactionCreate", async (interaction) => {
+  if (
+    interaction.isSelectMenu() &&
+    interaction.customId.startsWith(SELECT_DAO_FP)
+  ) {
+    const fundingProposalId = interaction.customId.replace(SELECT_DAO_FP, "");
+
+    await interaction.deferUpdate();
+    const fundingProposal = await FundingProposal.findById(
+      fundingProposalId
+    ).exec();
+
+    if (!fundingProposal) {
+      return;
+    }
+
+    const contractId = interaction.values[0];
+
+    fundingProposal.daoContractAddress = contractId;
+    await fundingProposal.save();
+    interaction.editReply({
+      content: `Now select the proposal`,
+      components: [
+        markSelected(
+          interaction,
+          interaction.message.components?.[0] as MessageActionRow
+        ),
+        new MessageActionRow().addComponents([
+          new MessageButton({
+            style: "LINK",
+            url: `${process.env.SITE_URL}/create-funding-proposal/${fundingProposal.id}`,
+            label: "Confirm Funding Proposal Tx",
+          }),
+        ]),
+      ],
+    });
+  }
+});

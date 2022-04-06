@@ -78,7 +78,8 @@ export const getProposal = async (
     },
   });
 
-  const result = cvToJSON(hexToCV(res.result!)).value as IClarityValue | null;
+  const result = cvToJSON(hexToCV(res.result as string))
+    .value as IClarityValue | null;
 
   if (result) {
     const formattedProposal = unpackCV(result) as IFormattedProposal;
