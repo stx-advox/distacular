@@ -29,6 +29,7 @@ apiRouter.get("/micro-dao/:daoId", (req, res) => {
       res.json({
         name: dao.name,
         members: dao.members,
+        dissentPeriod: dao.dissentPeriod,
       });
     }
   });

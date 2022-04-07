@@ -12,6 +12,7 @@ import { userSession } from "../constants/stacks-session";
 interface IGetDAOData {
   name: string;
   members: string[];
+  dissentPeriod: number;
 }
 
 const CreateMicroDAOView: React.FC = () => {
@@ -56,10 +57,10 @@ const CreateMicroDAOView: React.FC = () => {
         .filter((memberAddress) => memberAddress !== myAddress)
         .map((memberAddress) => `{address: '${memberAddress}}`)
         .join("\n        ");
-      const updatedContract = mDAOContract.replace(
-        "$INITIAL_MEMBERS_PLACEHOLDER",
-        daoMembersList
-      );
+      const updatedContract = mDAOContract
+        .replace("$INITIAL_MEMBERS_PLACEHOLDER", daoMembersList)
+        // Default is 5 bitcoin days
+        .replace("$DISSENT_EXPIRY", String(daoData.dissentPeriod || 144 * 5));
       openContractDeploy({
         codeBody: updatedContract,
         contractName: daoData.name,

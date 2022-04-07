@@ -1,4 +1,7 @@
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
+import {
+  SlashCommandIntegerOption,
+  SlashCommandSubcommandBuilder,
+} from "@discordjs/builders";
 
 const addMultipleUserOptions = (
   builder: SlashCommandSubcommandBuilder,
@@ -25,6 +28,22 @@ const createMicroDAOCmd = new SlashCommandSubcommandBuilder()
         "mDAO name max 50 characters only letters dashes and numbers allowed 50 characters max"
       )
       .setRequired(true)
+  )
+  .addIntegerOption(
+    new SlashCommandIntegerOption()
+      .setName("dissent-period")
+      .setDescription(
+        "The period before the action becomes executable to give mDAO members a chance to dissent"
+      )
+      .setRequired(true)
+      .addChoices(
+        Array(5)
+          .fill(["", 0])
+          .map((_, index) => [
+            `${index + 1} day${index ? "s" : ""}`,
+            (index + 1) * 144,
+          ])
+      )
   );
 
 addMultipleUserOptions(createMicroDAOCmd, 1, 7);

@@ -12,6 +12,9 @@ export const handleCreateMicroDAO = async (
 ) => {
   const name = subcommand.options?.find((option) => option.name === "name")
     ?.value as string;
+  const dissentPeriod = subcommand.options?.find(
+    (option) => option.name === "dissent-period"
+  )?.value as string;
 
   const members = [
     interaction.member as GuildMember,
@@ -53,7 +56,7 @@ export const handleCreateMicroDAO = async (
     memberAddresses.push(data.address);
   }
 
-  const mDAO = new MicroDAO({ name, members: memberAddresses });
+  const mDAO = new MicroDAO({ name, members: memberAddresses, dissentPeriod });
   await mDAO.save();
 
   interaction.editReply({

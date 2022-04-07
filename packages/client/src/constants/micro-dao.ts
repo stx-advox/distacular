@@ -1,20 +1,17 @@
-/*
-
-  {address: contract-caller}
-  {address: 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5}
-  {address: 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG}
-*/
-
 export const mDAOContract = `
+
 ;; micro-dao
 ;;
 ;; Small contract to manage a simple DAO structure for small teams
+(impl-trait 'SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.micro-dao-trait.micro-dao)
 
 ;; constants
 ;;
 
 ;; 5 days before an action could be executed if no dissent was put up
-(define-constant DISSENT-EXPIRY (* u144 u5))
+
+
+(define-constant DISSENT-EXPIRY u$DISSENT_EXPIRY)
 
 
 ;; proposal statuses
@@ -172,7 +169,7 @@ export const mDAOContract = `
         (map-insert funding-proposals current-index (merge data { total-amount: total-amount }))
         (var-set funding-proposals-count (+ u1 current-index))
         ;; add to funding proposal list
-        (ok (merge data {id: current-index, total-amount: total-amount}))))
+        (ok true)))
 
 
 ;; dissent on funding proposal
@@ -191,7 +188,7 @@ export const mDAOContract = `
         (asserts! (is-eq status PROPOSED) (err PROPOSAL-FROZEN))
         (map-set funding-proposals proposal-id (merge proposal {status: FAILED}))
         
-        (ok { id: proposal-id })))
+        (ok true)))
 
 
 ;; execute proposal
