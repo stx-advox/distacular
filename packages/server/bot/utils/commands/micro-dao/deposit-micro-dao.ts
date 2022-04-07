@@ -7,7 +7,24 @@ import { amountBuilder } from "../common-cmds";
 export const getDAOChoices = async (memberAddress?: string) => {
   const DAOs = await MicroDAO.find(
     memberAddress
-      ? { members: memberAddress, contractAddress: { $ne: null } }
+      ? {
+          $or: [
+            {
+              $and: [
+                {
+                  contractAddress: { $ne: null },
+                },
+                { members: memberAddress },
+              ],
+            },
+            {
+              contractAddress: {
+                $regex: memberAddress,
+                $options: "i",
+              },
+            },
+          ],
+        }
       : { contractAddress: { $ne: null } }
   ).exec();
   const existingDAOs = DAOs.filter((dao) => dao.contractAddress);

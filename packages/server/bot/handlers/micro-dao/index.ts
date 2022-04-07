@@ -15,17 +15,21 @@ export const handleMicroDAO = async (interaction: CommandInteraction) => {
     return;
   }
 
-  if (subcommand.name === "create") {
-    handleCreateMicroDAO(subcommand, interaction);
-  } else if (subcommand.name === "deposit") {
-    handleDepositMicroDAO(subcommand, interaction);
-  } else if (subcommand.name === "create-funding-proposal") {
-    handleCreateFundingProposal(subcommand, interaction);
-  } else if (subcommand.name === "dissent") {
-    handleDissent(subcommand, interaction);
-  } else if (subcommand.name === "execute-funding-proposal") {
-    handleExecuteFundingProposal(subcommand, interaction);
-  } else if (subcommand.name === "get-proposal-data") {
-    handleGetFundingProposal(subcommand, interaction);
+  try {
+    if (subcommand.name === "create") {
+      await handleCreateMicroDAO(subcommand, interaction);
+    } else if (subcommand.name === "deposit") {
+      await handleDepositMicroDAO(subcommand, interaction);
+    } else if (subcommand.name === "create-funding-proposal") {
+      await handleCreateFundingProposal(subcommand, interaction);
+    } else if (subcommand.name === "dissent") {
+      await handleDissent(subcommand, interaction);
+    } else if (subcommand.name === "execute-funding-proposal") {
+      await handleExecuteFundingProposal(subcommand, interaction);
+    } else if (subcommand.name === "get-proposal-data") {
+      await handleGetFundingProposal(subcommand, interaction);
+    }
+  } catch (e) {
+    console.log(`A micro dao error happened`, e);
   }
 };

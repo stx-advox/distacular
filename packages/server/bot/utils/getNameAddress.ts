@@ -1,4 +1,8 @@
-import { Configuration, NamesApi } from "@stacks/blockchain-api-client";
+import {
+  BnsGetNameInfoResponse,
+  Configuration,
+  NamesApi,
+} from "@stacks/blockchain-api-client";
 import fetch from "cross-fetch";
 import { CommandInteraction, SelectMenuInteraction } from "discord.js";
 
@@ -13,14 +17,25 @@ export const getNameAddressWithErrorHandling = async (
   name: string,
   interaction: CommandInteraction | SelectMenuInteraction
 ) => {
-  const res = await namesAPI.getNameInfo({ name });
-
-  const notFound = !res.address;
-  if (notFound) {
+  let res: BnsGetNameInfoResponse;
+  const respondWithError = () => {
+    const content = `Couldn't find a stx address with the name ${name}, change that name to a BNS name to continue`;
     interaction.editReply({
-      content: `Couldn't find a stx address with the name ${name}`,
+      content,
     });
     return null;
+  };
+  if (name.split(".").length > 1) {
+    return respondWithError();
+  }
+  try {
+    res = await namesAPI.getNameInfo({ name });
+    const notFound = !res.address;
+    if (notFound) {
+      return respondWithError();
+    }
+  } catch (e) {
+    return respondWithError();
   }
 
   return res;
