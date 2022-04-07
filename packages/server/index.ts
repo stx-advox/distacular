@@ -1,5 +1,16 @@
 import express from "express";
 import path from "path";
+import * as Sentry from "@sentry/node";
+import * as Tracing from "@sentry/tracing";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
 
 import { apiRouter } from "./routers/api";
 import cors from "cors";
@@ -7,6 +18,7 @@ import { connectDB } from "./bot/utils/connect-db";
 import { config } from "dotenv";
 const port = process.env.PORT || 8244;
 import "./bot";
+
 config();
 
 const app = express();

@@ -15,5 +15,9 @@
     "license": "ISC",
     "devDependencies": {
         "lerna": "^4.0.0"
+    },
+    "dependencies": {
+        "@sentry/node": "^6.19.6",
+        "@sentry/tracing": "^6.19.6"
     }
 }
