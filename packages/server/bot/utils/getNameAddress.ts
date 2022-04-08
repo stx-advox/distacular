@@ -25,7 +25,7 @@ export const getNameAddressWithErrorHandling = async (
     });
     return null;
   };
-  if (name.split(".").length > 1) {
+  if (name.split(".").length < 2) {
     return respondWithError();
   }
   try {
