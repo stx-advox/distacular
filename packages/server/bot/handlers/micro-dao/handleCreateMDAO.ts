@@ -25,7 +25,7 @@ export const handleCreateMicroDAO = async (
       .map((option) => option.member) as GuildMember[]),
   ];
 
-  if (!/[\w-]{3,50}/.test(name)) {
+  if (!/^[a-z-0-9]{3,50}$/.test(name)) {
     return interaction.editReply({
       content: "Yo! letters, numbers and dashes only! like hz-dao or something",
     });
