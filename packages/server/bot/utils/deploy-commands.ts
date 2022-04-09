@@ -1,17 +1,14 @@
 import { REST } from "@discordjs/rest";
+import { client } from "../client";
 import { Routes } from "discord-api-types/v9";
 import { config } from "dotenv";
 import { microDAOCmd } from "./commands/micro-dao";
-import { sendSTXCmd } from "./commands/send-stx-cmd";
-import { connectDB } from "./connect-db";
 
 config();
 export const deployCommands = async (
   guild: string = process.env.GUILD_ID as string
 ) => {
-  await connectDB();
-
-  const commands = [sendSTXCmd, microDAOCmd].map((command) => command.toJSON());
+  const commands = [microDAOCmd].map((command) => command.toJSON());
 
   const rest = new REST({ version: "9" }).setToken(
     process.env.DISCORD_BOT_TOKEN as string
@@ -26,4 +23,14 @@ export const deployCommands = async (
   } catch (error) {
     return console.error(JSON.stringify(error));
   }
+};
+
+export const updateGuildsCmds = async () => {
+  client.on("ready", async () => {
+    const guilds = await client.guilds.fetch();
+    for (const guild of guilds.values()) {
+      await deployCommands(guild.id);
+    }
+  });
+  client.login(process.env.DISCORD_BOT_TOKEN);
 };
