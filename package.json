@@ -8,16 +8,25 @@
         "start:backend": "lerna run --scope distacular-server start --stream",
         "start": "npm run build:frontend && npm run start:backend",
         "dev:frontend": "lerna run --scope distacular-client start --stream",
-        "dev:backend": "lerna run --scope distacular-server dev --stream"
+        "dev:backend": "lerna run --scope distacular-server dev --stream",
+        "prepare": "husky install",
+        "commit": "git-cz"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "commitizen": "^4.2.4",
+        "husky": "^7.0.0",
         "lerna": "^4.0.0"
     },
     "dependencies": {
         "@sentry/node": "^6.19.6",
         "@sentry/tracing": "^6.19.6"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
     }
 }
