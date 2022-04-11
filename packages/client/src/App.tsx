@@ -12,6 +12,11 @@ import { userSession } from "./constants/stacks-session";
 import { CreateFundingProposalView } from "./routes/CreateFundingProposal";
 import DissentView from "./routes/Dissent";
 import ExecuteFundingProposalView from "./routes/ExcuteFundingProposal";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from 'react-query/devtools'
+
+
+const queryClient = new QueryClient()
 
 function App() {
   const authOptions: AuthOptions = {
@@ -28,6 +33,9 @@ function App() {
       {!isLoggedIn ? (
         <Login />
       ) : (
+          <QueryClientProvider client={queryClient}>
+            <ReactQueryDevtools initialIsOpen={false} />
+
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -61,6 +69,7 @@ function App() {
             {/* </Route> */}
           </Routes>
         </BrowserRouter>
+          </QueryClientProvider>
       )}
     </Connect>
   );
