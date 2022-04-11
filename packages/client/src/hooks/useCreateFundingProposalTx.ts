@@ -10,9 +10,10 @@ import {
 } from "@stacks/transactions";
 import { principalCV } from "@stacks/transactions/dist/clarity/types/principalCV";
 import { useState, useCallback, useMemo } from "react";
+import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { userSession } from "../constants/stacks-session";
-import { Queries } from "../queries";
+import { IGetFundingProposalData } from "../types";
 
 export const useCreateFundingProposalTx = () => {
   // hooks
@@ -20,7 +21,19 @@ export const useCreateFundingProposalTx = () => {
   const { profile } = userSession.loadUserData();
 
   // react query
-  const { data: fundingProposalData, status } = Queries.getFundingProposal(id);
+  const { data: fundingProposalData, status } = useQuery<
+    IGetFundingProposalData,
+    Error
+  >(
+    ["funding-proposal", id],
+    () =>
+      fetch(
+        `${process.env.REACT_APP_ENDPOINT}/api/funding-proposal/${id}`
+      ).then((data) => data.json()),
+    {
+      enabled: !!id,
+    }
+  );
   // state
   const [txId, setTxId] = useState("");
 
@@ -71,7 +84,7 @@ export const useCreateFundingProposalTx = () => {
         },
       });
     }
-  }, [fundingProposalData, status]);
+  }, [fundingProposalData, status, profile.stxAddress.mainnet]);
 
   const grants = useMemo(() => {
     return fundingProposalData?.grants
