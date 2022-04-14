@@ -1,79 +1,11 @@
-import { openContractDeploy } from "@stacks/connect-react";
-import { StacksMainnet } from "@stacks/network";
 import React from "react";
-import { useState } from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
 import Button from "react-bootstrap/Button";
-import { useParams } from "react-router-dom";
-import { mDAOContract } from "../constants/micro-dao";
-import { userSession } from "../constants/stacks-session";
-
-interface IGetDAOData {
-  name: string;
-  members: string[];
-  dissentPeriod: number;
-}
+import { useCreateMiroDAO } from "../hooks";
 
 const CreateMicroDAOView: React.FC = () => {
-  const { daoId } = useParams<{ daoId: string }>();
+  const { daoData, deployDAOContract, status, txId } = useCreateMiroDAO()
 
-  const [daoData, setDAOData] = useState<IGetDAOData>();
-  const [txId, setTxId] = useState("");
-  useEffect(() => {
-    if (daoId) {
-      fetch(`${process.env.REACT_APP_ENDPOINT}/api/micro-dao/${daoId}`)
-        .then((data) => data.json())
-        .then((data: IGetDAOData) => {
-          setDAOData(data);
-        });
-    }
-  }, [daoId]);
-
-  const registerMicroDAOContract = useCallback(
-    async (txId: string) => {
-      await fetch(
-        `${process.env.REACT_APP_ENDPOINT}/api/micro-dao/${daoId}/contract-address`,
-        {
-          method: "PUT",
-          body: JSON.stringify({
-            txId,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    },
-
-    [daoId]
-  );
-
-  const deployDAOContract = useCallback(() => {
-    if (daoData) {
-      const myAddress = userSession.loadUserData().profile.stxAddress.mainnet;
-      const daoMembersList = daoData.members
-        // since tx-sender is by default a member of the DAO repitition is unnecessary
-        .filter((memberAddress) => memberAddress !== myAddress)
-        .map((memberAddress) => `{address: '${memberAddress}}`)
-        .join("\n        ");
-      const updatedContract = mDAOContract
-        .replace("$INITIAL_MEMBERS_PLACEHOLDER", daoMembersList)
-        // Default is 5 bitcoin days
-        .replace("$DISSENT_EXPIRY", String(daoData.dissentPeriod || 144 * 5));
-      openContractDeploy({
-        codeBody: updatedContract,
-        contractName: daoData.name,
-        network: new StacksMainnet(),
-        onFinish(data) {
-          setTxId(data.txId);
-          registerMicroDAOContract(data.txId);
-        },
-      });
-    }
-  }, [daoData, registerMicroDAOContract]);
-
-  return daoData ? (
+  return daoData && status === "success" ? (
     <div className="App">
       <header className="App-header">
         <p>DAO name: {daoData.name}</p>
