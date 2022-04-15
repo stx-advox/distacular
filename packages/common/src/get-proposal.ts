@@ -3,7 +3,13 @@ import {
   InfoApi,
   SmartContractsApi,
 } from "@stacks/blockchain-api-client";
-import { cvToHex, cvToJSON, hexToCV, uintCV } from "@stacks/transactions";
+import {
+  cvToHex,
+  cvToJSON,
+  cvToValue,
+  hexToCV,
+  uintCV,
+} from "@stacks/transactions";
 
 export interface IFormattedProposal {
   id: number;
@@ -57,6 +63,26 @@ export const SCApi = new SmartContractsApi(config);
 
 export const infoApi = new InfoApi(config);
 
+export const getProposalDissentPassed = async (
+  contractId: string,
+  proposalCreationBlockHeight: number
+): Promise<boolean> => {
+  const [contractAddress, contractName] = contractId.split(".");
+
+  const { result } = await SCApi.callReadOnlyFunction({
+    contractAddress,
+    contractName,
+    functionName: "is-dissent-passed",
+    readOnlyFunctionArgs: {
+      sender: contractAddress,
+      arguments: [cvToHex(uintCV(proposalCreationBlockHeight))],
+    },
+  });
+  if (result) {
+    return cvToValue(hexToCV(result));
+  }
+  return false;
+};
 export const getProposal = async (
   contractId: string,
   proposalIndex: number,
@@ -83,8 +109,11 @@ export const getProposal = async (
   if (result) {
     const formattedProposal = unpackCV(result) as IFormattedProposal;
     formattedProposal.id = proposalIndex;
-    formattedProposal.isPastDissent =
-      formattedProposal["created-at"] + 144 * 5 < burn_block_height;
+    const isDissentPassed = await getProposalDissentPassed(
+      contractId,
+      proposalIndex
+    );
+    formattedProposal.isPastDissent = isDissentPassed;
 
     return formattedProposal;
   }

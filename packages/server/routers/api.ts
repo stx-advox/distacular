@@ -1,37 +1,36 @@
 import { Router } from "express";
-import { SendSTX } from "../bot/schemas/tx";
 import { Document } from "mongoose";
 import { IMicroDAO, MicroDAO } from "../bot/schemas/micro-dao";
 import { TransactionsApi, Configuration } from "@stacks/blockchain-api-client";
 import { SmartContractTransaction } from "@stacks/stacks-blockchain-api-types";
 import fetch from "cross-fetch";
-import { deployCommands } from "../bot/utils/deploy-commands";
 import { FundingProposal } from "../bot/schemas/funding-proposal";
 
 export const apiRouter = Router();
 
-apiRouter.get("/send-stx/:txId", (req, res) => {
-  SendSTX.findById(req.params.txId, (err, tx) => {
-    if (tx) {
-      res.json({
-        amount: tx.amount,
-        recipient: tx.recipient,
-      });
-    } else {
-      res.status(404).json({ error: "tx not found" });
-    }
-  });
-});
-
 apiRouter.get("/micro-dao/:daoId", (req, res) => {
   MicroDAO.findById(req.params.daoId, (err, dao) => {
-    if (dao) {
+    if (!err && dao) {
       res.json({
         name: dao.name,
         members: dao.members,
         dissentPeriod: dao.dissentPeriod,
       });
     }
+    res.status(404).json({ error: "dao not found" });
+  });
+});
+
+apiRouter.get("/micro-dao-by-contract/:contractId", (req, res) => {
+  MicroDAO.find({ contractAddress: req.params.contractId }, (err, dao) => {
+    if (!err && dao[0]) {
+      res.json({
+        name: dao[0].name,
+        members: dao[0].members,
+        dissentPeriod: dao[0].dissentPeriod,
+      });
+    }
+    res.status(404).json({ error: "dao not found" });
   });
 });
 
@@ -107,11 +106,9 @@ apiRouter.put<any, { daoId: string }, any, { txId: string }>(
 
           await dao.save();
 
-          res.json({
+          return res.json({
             message: "Saved DAO successfully!",
           });
-
-          deployCommands();
         }
       );
 
