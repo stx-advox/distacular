@@ -3,9 +3,9 @@ import Button from "react-bootstrap/Button";
 import { useCreateMiroDAO } from "../hooks";
 
 const CreateMicroDAOView: React.FC = () => {
-  const { daoData, deployDAOContract, status, txId } = useCreateMiroDAO()
+  const { daoData, deployDAOContract, txId } = useCreateMiroDAO()
 
-  return daoData && status === "success" ? (
+  return daoData ? (
     <div className="App">
       <header className="App-header">
         <p>DAO name: {daoData.name}</p>

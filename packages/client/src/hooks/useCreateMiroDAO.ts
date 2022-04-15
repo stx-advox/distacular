@@ -41,7 +41,7 @@ export const useCreateMiroDAO = () => {
     (txId: string) => {
       mutate(txId);
     },
-    [daoId]
+    [mutate]
   );
 
   const deployDAOContract = useCallback(() => {
