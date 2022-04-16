@@ -5,6 +5,7 @@ import { depositMicroDAOCmd } from "./deposit-micro-dao";
 import { dissentCmd } from "./dissent-cmd";
 import { executeFundingProposalCmd } from "./execute-funding-proposal-cmd";
 import { buildGetFundingProposalCmd } from "./get-proposal-data";
+import { buildSubscribe } from "./subscribe-to-dao";
 
 export const microDAOCmd = new SlashCommandBuilder()
   .setName("micro-dao")
@@ -16,4 +17,5 @@ export const microDAOCmd = new SlashCommandBuilder()
   .addSubcommand(createFundingProposal)
   .addSubcommand(dissentCmd)
   .addSubcommand(executeFundingProposalCmd)
-  .addSubcommand(buildGetFundingProposalCmd);
+  .addSubcommand(buildGetFundingProposalCmd)
+  .addSubcommand(buildSubscribe);

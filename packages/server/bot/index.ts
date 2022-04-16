@@ -8,6 +8,7 @@ import { handleMicroDAO } from "./handlers/micro-dao";
 
 import { handleSendSTX } from "./handlers/send-stx";
 import { deployCommands } from "./utils/deploy-commands";
+import { listenToDAOEvents } from "./utils/subscriptionListener";
 
 client.login(process.env.DISCORD_BOT_TOKEN);
 
@@ -27,3 +28,5 @@ client.on("interactionCreate", async (interaction: Interaction) => {
 client.on("guildCreate", async (guild) => {
   await deployCommands(guild.id);
 });
+
+listenToDAOEvents(client);
