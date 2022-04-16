@@ -4,8 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { userSession } from "./constants/stacks-session";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { AuthenticatedRoutes } from "./routes";
-import { Login } from "./pages";
+import { MainRoutes } from "./routes";
 
 const queryClient = new QueryClient();
 
@@ -17,18 +16,12 @@ function App() {
     },
     userSession,
   };
-  const isLoggedIn = userSession.isUserSignedIn();
-
   return (
     <Connect authOptions={authOptions}>
-      {!isLoggedIn ? (
-        <Login />
-      ) : (
-          <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <AuthenticatedRoutes />
-          </QueryClientProvider>
-      )}
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <MainRoutes />
+      </QueryClientProvider>
     </Connect>
   );
 }

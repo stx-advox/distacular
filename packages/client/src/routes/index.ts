@@ -1,1 +1,2 @@
-export { default as AuthenticatedRoutes } from "./AuthenticatedRoutes";
+export { default as MainRoutes } from "./MainRoutes";
+export { default as PrivateRoute } from "./PrivateRoute";
