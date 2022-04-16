@@ -9,3 +9,8 @@ export interface IGetDAOData {
   members: string[];
   dissentPeriod: number;
 }
+
+export interface IGetSendSTXResponse {
+  recipient: string;
+  amount: number;
+}

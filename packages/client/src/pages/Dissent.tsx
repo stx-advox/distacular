@@ -1,33 +1,8 @@
-import { openContractCall } from "@stacks/connect-react";
-import { StacksMainnet } from "@stacks/network";
-import { uintCV } from "@stacks/transactions";
-import { useState, useCallback } from "react";
 import { Button } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useDissent } from "../hooks";
 
 const DissentView = () => {
-  const { contractAddress, proposalId } = useParams<{
-    contractAddress: string;
-    proposalId: string;
-  }>();
-
-  const [txId, setTxId] = useState("");
-
-  const dissent = useCallback(async () => {
-    if (contractAddress && proposalId) {
-      const [address, name] = contractAddress.split(".");
-      openContractCall({
-        contractAddress: address,
-        contractName: name,
-        functionName: "dissent",
-        functionArgs: [uintCV(proposalId)],
-        network: new StacksMainnet(),
-        onFinish(data) {
-          setTxId(data.txId);
-        },
-      });
-    }
-  }, [contractAddress, proposalId]);
+  const { contractAddress, txId, dissent } = useDissent()
 
   return contractAddress ? (
     <div className="App">

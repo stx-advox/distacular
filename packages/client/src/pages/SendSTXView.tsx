@@ -1,42 +1,10 @@
-import { openSTXTransfer } from "@stacks/connect-react";
-import { StacksMainnet } from "@stacks/network";
 import React from "react";
-import { useState } from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
 import Button from "react-bootstrap/esm/Button";
-import { useParams } from "react-router-dom";
+import { useSendSTX } from "../hooks";
 
-interface IGetSendSTXResponse {
-    recipient: string;
-    amount: number;
-}
 
 const SendSTXView: React.FC = () => {
-    const { txId } = useParams<{ txId: string }>();
-
-    const [txData, setTx] = useState<IGetSendSTXResponse>();
-
-    useEffect(() => {
-        if (txId) {
-            fetch(`${process.env.REACT_APP_ENDPOINT}/api/send-stx/${txId}`)
-                .then((data) => data.json())
-                .then((data: IGetSendSTXResponse) => {
-                    setTx(data);
-                });
-        }
-    }, [txId]);
-
-    const confirmSendSTX = useCallback(() => {
-        if (txData) {
-            openSTXTransfer({
-                ...txData,
-                amount: String(txData.amount),
-                network: new StacksMainnet(),
-            });
-        }
-    }, [txData]);
-
+    const { txData, confirmSendSTX } = useSendSTX()
     return txData ? (
         <div className="App">
             <header className="App-header">
