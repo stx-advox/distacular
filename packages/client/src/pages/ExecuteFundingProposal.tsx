@@ -5,26 +5,12 @@ import {
   makeContractSTXPostCondition,
   uintCV,
 } from "@stacks/transactions";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import { getProposal } from "@distacular/common";
+import { useProposal } from "../hooks";
 
-const useProposal = (contractAddress: string, proposalId: string) => {
-  const [proposal, setProposal] = useState<any>();
 
-  const loadProposal = useCallback(async () => {
-    const proposal = await getProposal(contractAddress, Number(proposalId));
-    if (proposal) {
-      setProposal(proposal);
-    }
-  }, [contractAddress, proposalId]);
-
-  useEffect(() => {
-    loadProposal();
-  }, [loadProposal]);
-  return proposal;
-};
 
 const ExecuteFundingProposalView = () => {
   const { contractAddress, proposalId } = useParams<{

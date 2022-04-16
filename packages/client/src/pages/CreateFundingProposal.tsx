@@ -1,10 +1,11 @@
+import React from "react";
 import Button from "react-bootstrap/Button";
 import { useCreateFundingProposalTx } from "../hooks";
 
-
-export const CreateFundingProposalView = () => {
+const CreateFundingProposalView: React.FC = () => {
   // hooks
-  const { fundingProposalData, grants, txId, submitCreateFundingProposalTx } = useCreateFundingProposalTx()
+  const { fundingProposalData, grants, txId, submitCreateFundingProposalTx } =
+    useCreateFundingProposalTx();
 
   return fundingProposalData ? (
     <div className="App">
@@ -12,9 +13,7 @@ export const CreateFundingProposalView = () => {
         <p>DAO name: {fundingProposalData.contractAddress.split(".")[1]}</p>
         <p>Funding Proposal Description: {fundingProposalData.memo}</p>
         <p>Members:</p>
-        <p style={{ fontSize: 24 }}>
-          {grants}
-        </p>
+        <p style={{ fontSize: 24 }}>{grants}</p>
         {txId ? (
           <Button
             href={`https://explorer.stacks.co/txid/${txId}?chain=mainnet`}
@@ -38,3 +37,5 @@ export const CreateFundingProposalView = () => {
     <p>please provide a tx id</p>
   );
 };
+
+export default CreateFundingProposalView;
