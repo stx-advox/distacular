@@ -11,7 +11,7 @@ export const apiRouter = Router();
 apiRouter.get("/micro-dao/:daoId", (req, res) => {
   MicroDAO.findById(req.params.daoId, (err, dao) => {
     if (!err && dao) {
-      res.json({
+      return res.json({
         name: dao.name,
         members: dao.members,
         dissentPeriod: dao.dissentPeriod,
@@ -24,7 +24,7 @@ apiRouter.get("/micro-dao/:daoId", (req, res) => {
 apiRouter.get("/micro-dao-by-contract/:contractId", (req, res) => {
   MicroDAO.find({ contractAddress: req.params.contractId }, (err, dao) => {
     if (!err && dao[0]) {
-      res.json({
+      return res.json({
         name: dao[0].name,
         members: dao[0].members,
         dissentPeriod: dao[0].dissentPeriod,
