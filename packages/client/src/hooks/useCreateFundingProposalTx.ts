@@ -18,8 +18,6 @@ import { IGetFundingProposalData } from "../types";
 export const useCreateFundingProposalTx = () => {
   // hooks
   const { id } = useParams<{ id: string }>();
-  const { profile } = userSession.loadUserData();
-
   // react query
   const { data: fundingProposalData, status } = useQuery<
     IGetFundingProposalData,
@@ -46,7 +44,7 @@ export const useCreateFundingProposalTx = () => {
         contractName,
         functionName: "get-balance",
         functionArgs: [],
-        senderAddress: profile.stxAddress.mainnet,
+        senderAddress: userSession.loadUserData().profile.stxAddress.mainnet,
       });
 
       const contractBalance = Number(cvToJSON(balanceRes).value.value);
@@ -84,7 +82,7 @@ export const useCreateFundingProposalTx = () => {
         },
       });
     }
-  }, [fundingProposalData, status, profile.stxAddress.mainnet]);
+  }, [fundingProposalData, status]);
 
   const grants = useMemo(() => {
     return fundingProposalData?.grants
@@ -97,5 +95,6 @@ export const useCreateFundingProposalTx = () => {
     txId,
     grants,
     fundingProposalData,
+    status,
   };
 };
