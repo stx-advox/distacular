@@ -71,6 +71,7 @@ client.on("interactionCreate", async (interaction) => {
 
     interaction.editReply({
       content: `Subscribed to ${contractId} on <#${sub.channelId}>`,
+      components: [],
     });
   }
 });

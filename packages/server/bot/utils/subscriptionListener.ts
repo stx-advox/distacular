@@ -36,8 +36,7 @@ export const listenToDAOEvents = (client: Client) => {
 
         const name = await getBNSName(event.sender_address);
 
-        // if (event.tx_status === "success") {
-        const embed = new MessageEmbed({
+        const content = {
           author: {
             name,
           },
@@ -46,10 +45,10 @@ export const listenToDAOEvents = (client: Client) => {
           } tx to the ${contract.contract_id.split(".")[1]} mDAO`,
           title: "Check Tx here",
           url: `https://explorer.stacks.co/txid/${event.tx_id}?chain=mainnet`,
-        });
+        };
+        const embed = new MessageEmbed(content);
 
         channel.send({ embeds: [embed] });
-        // }
       }
     });
   });

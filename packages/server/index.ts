@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import * as Sentry from "@sentry/node";
-import * as Tracing from "@sentry/tracing";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
