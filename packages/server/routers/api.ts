@@ -41,7 +41,7 @@ apiRouter.put<any, { daoId: string }, any, { txId: string }>(
     if (txId) {
       const config = new Configuration({
         fetchApi: fetch,
-        basePath: process.env.REACT_APP_STACKS_URL,
+        basePath: process.env.STACKS_URL,
       });
       const txAPI = new TransactionsApi(config);
       let txData;

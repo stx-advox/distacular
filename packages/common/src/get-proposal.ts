@@ -10,6 +10,7 @@ import {
   hexToCV,
   uintCV,
 } from "@stacks/transactions";
+import { STACKS_URL } from "./env";
 
 export interface IFormattedProposal {
   id: number;
@@ -56,7 +57,7 @@ export const unpackCV = (proposal: IClarityValue): any => {
 };
 
 const config = new Configuration({
-  basePath: process.env.REACT_APP_STACKS_URL,
+  basePath: STACKS_URL,
 });
 
 export const SCApi = new SmartContractsApi(config);
