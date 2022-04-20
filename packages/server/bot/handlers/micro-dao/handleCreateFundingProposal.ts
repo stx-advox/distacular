@@ -13,6 +13,7 @@ import {
   markSelected,
 } from "./handleDepositMDAO";
 import { client } from "../../client";
+import { tokenList } from "@distacular/common";
 
 const SELECT_DAO_FP = `select-dao-fp-`;
 
@@ -33,12 +34,17 @@ export const handleCreateFundingProposal = async (
     return;
   }
 
-  const memo = getOption(subcommand, "funding-proposal-description");
-  if (typeof memo === "string" && memo.length > 50) {
+  const memo = getOption(subcommand, "funding-proposal-description") as string;
+  if (memo.length > 50) {
     return interaction.editReply({
       content: "Description length must not exceed 50 characters!",
     });
   }
+
+  const tokenName = getOption(subcommand, "token") as string;
+
+  const details =
+    tokenList.find((item) => item.name === tokenName) || tokenList[0];
 
   const granteesMap = subcommand.options.reduce((acc, option) => {
     if (option.name.startsWith("grantee")) {
@@ -77,12 +83,16 @@ export const handleCreateFundingProposal = async (
       return;
     }
 
-    const amountInuSTX = Math.floor(amount * 1e6);
-    addressesAmounts.push([data.address, amountInuSTX]);
+    const amountInSmallestUnit = Math.floor(
+      amount * Number(`1e${details.scale}`)
+    );
+    addressesAmounts.push([data.address, amountInSmallestUnit]);
 
     const fundingProposal = new FundingProposal();
     fundingProposal.grants = addressesAmounts;
-    fundingProposal.memo = String(memo);
+    fundingProposal.tokenContractAddress = details.fullAddresses[0];
+
+    fundingProposal.memo = memo;
     await fundingProposal.save();
     const userAddress = await getBNSFromInteraction(interaction);
 

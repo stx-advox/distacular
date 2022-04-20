@@ -1,15 +1,23 @@
 import { SendSTX } from "../schemas/tx";
-import fetch from "cross-fetch";
 import { CommandInteraction } from "discord.js";
 import { getNameAddressWithErrorHandling } from "../utils/getNameAddress";
+import { tokenList } from "@distacular/common";
 
-export const checkSTXAmount = (
+export const checkTokenAmount = (
   amount: number,
+  tokenContractAddress: string,
   interaction: CommandInteraction
 ) => {
-  if (amount > 1000 || amount < 0.000001) {
+  const tokenData =
+    tokenList.find((token) =>
+      token.fullAddresses[0].startsWith(tokenContractAddress)
+    ) || tokenList[0];
+  const minValue = Number(`1e-${tokenData.scale}`);
+  if (amount > 10000 || amount < minValue) {
     return interaction.editReply({
-      content: "You can't send more than 1000 or less than 0.000001 STX",
+      content: `You can't send more than 10000 or less than ${minValue.toFixed(
+        tokenData.scale
+      )} ${tokenData.name}`,
     });
   }
 };
@@ -25,7 +33,13 @@ export const handleSendSTX = async (interaction: CommandInteraction) => {
 
   const amountInuSTX = (amount.value as number) * 1e6;
 
-  if (checkSTXAmount(amount!.value as number, interaction)) {
+  if (
+    checkTokenAmount(
+      amount!.value as number,
+      tokenList[0].fullAddresses[0],
+      interaction
+    )
+  ) {
     return null;
   }
 

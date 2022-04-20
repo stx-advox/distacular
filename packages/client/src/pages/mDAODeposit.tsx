@@ -1,20 +1,28 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Button from "react-bootstrap/esm/Button";
 import { useDeployerName } from "../hooks";
 import { useMicroDAODeposit } from "../hooks";
 
-
 const MicroDAODepositView: React.FC = () => {
-  const { contractAddress, deposit, txId, amount } = useMicroDAODeposit()
+  const { contractAddress, deposit, txId, amount, tokenDetails } =
+    useMicroDAODeposit();
   const deployerName = useDeployerName(contractAddress);
-
+  const tokenAmount = useMemo(
+    () =>
+      (Number(amount) / Number(`1e${tokenDetails.scale}`)).toFixed(
+        tokenDetails.scale
+      ),
+    [amount, tokenDetails.scale]
+  );
   return contractAddress ? (
     <div className="App">
       <header className="App-header">
         <p>
           DAO name: {deployerName}.{contractAddress.split(".")[1]}
         </p>
-        <p>Deposit Amount: {Number(amount) / 1e6} STX</p>
+        <p>
+          Deposit Amount: {tokenAmount} {tokenDetails.name}
+        </p>
         {txId ? (
           <Button
             href={`https://explorer.stacks.co/txid/${txId}?chain=mainnet`}

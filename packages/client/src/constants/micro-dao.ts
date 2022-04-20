@@ -233,7 +233,7 @@ export const mDAOContract = `
 ;; take a proposal-id 
 ;; check that:
 ;; get the list of targets to pay off
-;; send stx to the targets list 
+;; send tokens to the targets list 
 ;; mark proposal as PASSED
 
 

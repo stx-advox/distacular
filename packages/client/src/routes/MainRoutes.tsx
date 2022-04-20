@@ -22,15 +22,11 @@ const MainRoutes: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<PrivateRoute children={<Home />} />} />
           <Route
-            path="/send-stx/:txId"
-            element={<PrivateRoute children={<SendSTXView />} />}
-          />
-          <Route
             path="/create-micro-dao/:daoId"
             element={<PrivateRoute children={<CreateMicroDAOView />} />}
           />
           <Route
-            path="/deposit-micro-dao/:contractAddress/:amount"
+            path="/deposit-micro-dao/:contractAddress/:tokenContractAddress/:amount"
             element={<PrivateRoute children={<MicroDAODepositView />} />}
           />
           <Route
@@ -45,13 +41,6 @@ const MainRoutes: React.FC = () => {
             path="/execute-funding-proposal/:contractAddress/:proposalId"
             element={<PrivateRoute children={<ExecuteFundingProposalView />} />}
           />
-          {/* <Route index element={<Home />} /> */}
-          {/* <Route path="teams" element={<Teams />}>
-                  <Route path=":teamId" element={<Team />} />
-                  <Route path="new" element={<NewTeamForm />} />
-                  <Route index element={<LeagueStandings />} />
-              </Route> */}
-          {/* </Route> */}
         </Routes>
       </BrowserRouter>
     </Suspense>

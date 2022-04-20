@@ -13,7 +13,7 @@ import {
 import { client } from "../../client";
 import { proposalSelect } from "../../templates/proposal-select";
 import { getBNSName } from "../../utils/getNameAddress";
-import { getProposal, infoApi } from "@distacular/common";
+import { getProposal, infoApi, tokenList } from "@distacular/common";
 
 const SELECT_GET_DAO_PREFIX = `select-get-dao-`;
 const SELECT_GET_PROPOSAL_PREFIX = `select-get-proposal-`;
@@ -95,20 +95,27 @@ client.on("interactionCreate", async (interaction) => {
         await getBNSName(proposal.proposer)
       );
 
+      const tokenInfo =
+        tokenList.find((item) =>
+          item.fullAddresses[0].startsWith(proposal["token-contract"])
+        ) || tokenList[0];
+
       const targetsFormatted = await Promise.all(
         proposal.targets.map(
           async (item) =>
             `User: ${await mentionBNSUser(
               interaction.guild as Guild,
               await getBNSName(item.address)
-            )} for a grant amount total of ${item.amount / 1e6} STX`
+            )} for a grant amount total of ${
+              item.amount / 10 ** tokenInfo.scale
+            } ${tokenInfo.name}`
         )
       );
       let description = `Proposer: ${name}
 Targets:
 ${targetsFormatted.join("\n")}
 
-Total: ${proposal["total-amount"] / 1e6} STX
+Total: ${proposal["total-amount"] / 10 ** tokenInfo.scale} ${tokenInfo.name}
 
 Info: ${proposal.memo}
 

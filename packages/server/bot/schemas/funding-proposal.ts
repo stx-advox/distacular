@@ -6,10 +6,7 @@ export interface IFundingProposal {
   grants: [grantee: string, amount: number][];
   memo: string;
   tokenContractAddress: string;
-  version: number;
 }
-
-console.log(tokenList);
 
 const schema = new Schema<IFundingProposal>({
   daoContractAddress: { required: false, type: String },
@@ -18,10 +15,9 @@ const schema = new Schema<IFundingProposal>({
   tokenContractAddress: {
     required: true,
     type: String,
-    default: "wstx",
+    default: tokenList[0].fullAddresses[0],
     enum: tokenList.map((token) => token.fullAddresses[0]),
   },
-  version: { required: true, type: Number, default: 1 },
 });
 
 export const FundingProposal = model<IFundingProposal>(

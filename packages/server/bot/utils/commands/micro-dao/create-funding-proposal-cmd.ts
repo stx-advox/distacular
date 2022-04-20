@@ -4,6 +4,7 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandUserOption,
 } from "@discordjs/builders";
+import { tokenSelectBuilder } from "./deposit-micro-dao";
 
 const createMultipleUserAmountPairs = (cmd: SlashCommandSubcommandBuilder) => {
   for (let i = 1; i <= 10; i += 1) {
@@ -38,7 +39,8 @@ const createFundingProposal = () => {
           "A short sentence or preferably a link to the details of the funding proposal"
         )
         .setRequired(true)
-    );
+    )
+    .addStringOption(tokenSelectBuilder);
   createMultipleUserAmountPairs(cmd);
   return cmd;
 };

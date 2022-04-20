@@ -21,6 +21,7 @@ export interface IFormattedProposal {
   status: number;
   targets: ITarget[];
   "total-amount": number;
+  "token-contract": string;
   isPastDissent: boolean;
 }
 

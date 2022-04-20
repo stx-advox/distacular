@@ -4,7 +4,7 @@ export default [
     description: "Stacks' native token",
     fullAddresses: ["SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.wstx::wstx"],
     precision: 4,
-    scale: null,
+    scale: 6,
     iconsCollection: {
       items: [
         {
@@ -100,7 +100,7 @@ export default [
       "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.age000-governance-token::alex",
     ],
     precision: 4,
-    scale: null,
+    scale: 8,
     iconsCollection: {
       items: [
         {
@@ -132,7 +132,7 @@ export default [
       "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-apower::apower",
     ],
     precision: 4,
-    scale: null,
+    scale: 8,
     iconsCollection: {
       items: [
         {
