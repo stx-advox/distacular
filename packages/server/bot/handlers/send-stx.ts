@@ -1,7 +1,7 @@
 import { SendSTX } from "../schemas/tx";
 import { CommandInteraction } from "discord.js";
 import { getNameAddressWithErrorHandling } from "../utils/getNameAddress";
-import { tokenList } from "@distacular/common";
+import { toFixed, tokenList } from "@distacular/common";
 
 export const checkTokenAmount = (
   amount: number,
@@ -15,8 +15,8 @@ export const checkTokenAmount = (
   const minValue = Number(`1e-${tokenData.scale}`);
   if (amount > 10000 || amount < minValue) {
     return interaction.editReply({
-      content: `You can't send more than 10000 or less than ${minValue.toFixed(
-        tokenData.scale
+      content: `You can't send more than 10000 or less than ${toFixed(
+        minValue
       )} ${tokenData.name}`,
     });
   }

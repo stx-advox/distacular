@@ -20,8 +20,6 @@ const createMultipleUserAmountPairs = (cmd: SlashCommandSubcommandBuilder) => {
           .setName(`amount${i}`)
           .setDescription(`The grant amount for grantee #${i}`)
           .setRequired(i === 1)
-          .setMaxValue(1000)
-          .setMinValue(1)
       );
   }
 };

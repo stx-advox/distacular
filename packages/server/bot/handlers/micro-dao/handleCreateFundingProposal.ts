@@ -14,6 +14,7 @@ import {
 } from "./handleDepositMDAO";
 import { client } from "../../client";
 import { tokenList } from "@distacular/common";
+import { checkTokenAmount } from "../send-stx";
 
 const SELECT_DAO_FP = `select-dao-fp-`;
 
@@ -46,6 +47,10 @@ export const handleCreateFundingProposal = async (
   const details =
     tokenList.find((item) => item.name === tokenName) || tokenList[0];
 
+  const tokenAddress = details.fullAddresses[0];
+
+  let totalAmount = 0;
+
   const granteesMap = subcommand.options.reduce((acc, option) => {
     if (option.name.startsWith("grantee")) {
       if (!option.member || !option.user) {
@@ -64,6 +69,8 @@ export const handleCreateFundingProposal = async (
       const memberKey = `grantee${grantNumber}`;
       const oldData = acc[memberKey];
 
+      totalAmount += Number(option.value);
+
       return {
         ...acc,
         [memberKey]: {
@@ -74,6 +81,10 @@ export const handleCreateFundingProposal = async (
     }
     return acc;
   }, {} as { [x: string]: { grantee: string; amount: number } });
+
+  if (checkTokenAmount(totalAmount, tokenAddress, interaction)) {
+    return null;
+  }
 
   const addressesAmounts: [bnsName: string, amount: number][] = [];
 

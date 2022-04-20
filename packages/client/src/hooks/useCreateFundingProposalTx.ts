@@ -1,3 +1,4 @@
+import { toFixed } from "@distacular/common";
 import { openContractCall } from "@stacks/connect-react";
 import { StacksMainnet } from "@stacks/network";
 import {
@@ -39,7 +40,9 @@ export const useCreateFundingProposalTx = () => {
 
   const submitCreateFundingProposalTx = useCallback(async () => {
     if (fundingProposalData && status === "success") {
-      const tokenContract = fundingProposalData.tokenContractAddress.split(".");
+      const tokenContract = fundingProposalData.tokenContractAddress
+        .split("::")[0]
+        .split(".");
       const daoContract = fundingProposalData.contractAddress.split(".");
       const balanceRes = await callReadOnlyFunction({
         contractAddress: tokenContract[0],
@@ -88,15 +91,20 @@ export const useCreateFundingProposalTx = () => {
   }, [fundingProposalData, status]);
 
   const grants = useMemo(() => {
-    const tokenInfo = findTokenByContract(
-      fundingProposalData!.tokenContractAddress
-    );
-    return fundingProposalData!.grants
-      .map((item) => {
-        const tokenPrecision = item[1] / Number(`1e${tokenInfo.scale}`);
-        return `Address: ${item[0]}, Amount: ${tokenPrecision}${tokenInfo.name}`;
-      })
-      .join("\n");
+    if (fundingProposalData) {
+      const tokenInfo = findTokenByContract(
+        fundingProposalData!.tokenContractAddress
+      );
+      return fundingProposalData!.grants
+        .map((item) => {
+          const tokenPrecision = toFixed(
+            item[1] / Number(`1e${tokenInfo.scale}`)
+          );
+          return `Address: ${item[0]}, Amount: ${tokenPrecision} ${tokenInfo.name}`;
+        })
+        .join("\n");
+    }
+    return "";
   }, [fundingProposalData]);
 
   return {
