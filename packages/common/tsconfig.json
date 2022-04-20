@@ -11,6 +11,7 @@
         "skipLibCheck": true,
         "noImplicitAny": false,
         "outDir": "lib",
-        "declaration": true
+        "declaration": true,
+        "resolveJsonModule": true
     }
 }
