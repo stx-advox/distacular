@@ -11,6 +11,7 @@
         "skipLibCheck": true,
         "noImplicitAny": false,
         "outDir": "lib",
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "moduleResolution": "node"
     }
 }

@@ -12,6 +12,7 @@
         "noImplicitAny": false,
         "outDir": "lib",
         "declaration": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "moduleResolution": "node"
     }
 }
