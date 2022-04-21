@@ -113,11 +113,11 @@ apiRouter.put<any, { daoId: string }, any, { txId: string }>(
       );
 
       // res.json(txData);
+    } else {
+      res.status(400).json({
+        error: "Need a tx id sent in request body!",
+      });
     }
-
-    res.status(400).json({
-      error: "Need a tx id sent in request body!",
-    });
   }
 );
 
