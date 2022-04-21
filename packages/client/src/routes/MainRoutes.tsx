@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { Suspense } from "react";
 import PrivateRoute from "./PrivateRoute";
+import RouterProvider from "../context/RouterContext";
 const Home = React.lazy(() => import("../pages/Home"));
 const ExecuteFundingProposalView = React.lazy(
   () => import("../pages/ExecuteFundingProposal")
@@ -18,41 +19,47 @@ const MainRoutes: React.FC = () => {
   return (
     <Suspense fallback={"loading"}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<PrivateRoute children={<Home />} />} />
-          <Route
-            path="/send-stx/:txId"
-            element={<PrivateRoute children={<SendSTXView />} />}
-          />
-          <Route
-            path="/create-micro-dao/:daoId"
-            element={<PrivateRoute children={<CreateMicroDAOView />} />}
-          />
-          <Route
-            path="/deposit-micro-dao/:contractAddress/:amount"
-            element={<PrivateRoute children={<MicroDAODepositView />} />}
-          />
-          <Route
-            path="/create-funding-proposal/:id"
-            element={<PrivateRoute children={<CreateFundingProposalView />} />}
-          />
-          <Route
-            path="/dissent-micro-dao/:contractAddress/:proposalId"
-            element={<PrivateRoute children={<DissentView />} />}
-          />
-          <Route
-            path="/execute-funding-proposal/:contractAddress/:proposalId"
-            element={<PrivateRoute children={<ExecuteFundingProposalView />} />}
-          />
-          {/* <Route index element={<Home />} /> */}
-          {/* <Route path="teams" element={<Teams />}>
+        <RouterProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<PrivateRoute children={<Home />} />} />
+            <Route
+              path="/send-stx/:txId"
+              element={<PrivateRoute children={<SendSTXView />} />}
+            />
+            <Route
+              path="/create-micro-dao/:daoId"
+              element={<PrivateRoute children={<CreateMicroDAOView />} />}
+            />
+            <Route
+              path="/deposit-micro-dao/:contractAddress/:amount"
+              element={<PrivateRoute children={<MicroDAODepositView />} />}
+            />
+            <Route
+              path="/create-funding-proposal/:id"
+              element={
+                <PrivateRoute children={<CreateFundingProposalView />} />
+              }
+            />
+            <Route
+              path="/dissent-micro-dao/:contractAddress/:proposalId"
+              element={<PrivateRoute children={<DissentView />} />}
+            />
+            <Route
+              path="/execute-funding-proposal/:contractAddress/:proposalId"
+              element={
+                <PrivateRoute children={<ExecuteFundingProposalView />} />
+              }
+            />
+            {/* <Route index element={<Home />} /> */}
+            {/* <Route path="teams" element={<Teams />}>
                   <Route path=":teamId" element={<Team />} />
                   <Route path="new" element={<NewTeamForm />} />
                   <Route index element={<LeagueStandings />} />
               </Route> */}
-          {/* </Route> */}
-        </Routes>
+            {/* </Route> */}
+          </Routes>
+        </RouterProvider>
       </BrowserRouter>
     </Suspense>
   );

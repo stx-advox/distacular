@@ -30,6 +30,11 @@ export const useCreateFundingProposalTx = () => {
       ).then((data) => data.json()),
     {
       enabled: !!id,
+      staleTime: 0,
+      cacheTime: 0,
+      retry: 0,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
     }
   );
   // state
