@@ -66,7 +66,7 @@ export const useMicroDAODeposit = () => {
       if (!postCondition) {
         return alert(`Yo pick a whitelisted contract!`);
       }
-      const token = tokenContractAddress.split(".");
+      const token = tokenContractAddress.split("::")[0].split(".");
       openContractCall({
         contractAddress: address,
         contractName: name,
