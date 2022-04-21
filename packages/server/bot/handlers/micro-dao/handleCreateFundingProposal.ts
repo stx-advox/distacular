@@ -98,30 +98,28 @@ export const handleCreateFundingProposal = async (
       amount * Number(`1e${details.scale}`)
     );
     addressesAmounts.push([data.address, amountInSmallestUnit]);
-
-    const fundingProposal = new FundingProposal();
-    fundingProposal.grants = addressesAmounts;
-    fundingProposal.tokenContractAddress = details.fullAddresses[0];
-
-    fundingProposal.memo = memo;
-    await fundingProposal.save();
-    const userAddress = await getBNSFromInteraction(interaction);
-
-    if (!userAddress) {
-      return;
-    }
-
-    interaction.editReply({
-      content: `Select the DAO you would deposit to from your DAOs`,
-      components: [
-        await buildDAOSelect(
-          fundingProposal.id,
-          userAddress.address,
-          SELECT_DAO_FP
-        ),
-      ],
-    });
   }
+  const fundingProposal = new FundingProposal();
+  fundingProposal.grants = addressesAmounts;
+  fundingProposal.tokenContractAddress = details.fullAddresses[0];
+
+  fundingProposal.memo = memo;
+  await fundingProposal.save();
+  const userAddress = await getBNSFromInteraction(interaction);
+
+  if (!userAddress) {
+    return;
+  }
+  interaction.editReply({
+    content: `Select the DAO you would deposit to from your DAOs`,
+    components: [
+      await buildDAOSelect(
+        fundingProposal.id,
+        userAddress.address,
+        SELECT_DAO_FP
+      ),
+    ],
+  });
 };
 
 client.on("interactionCreate", async (interaction) => {
