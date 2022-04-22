@@ -111,7 +111,7 @@ export const handleCreateFundingProposal = async (
     return;
   }
   interaction.editReply({
-    content: `Select the DAO you would deposit to from your DAOs`,
+    content: `Select the DAO, to create a funding proposal`,
     components: [
       await buildDAOSelect(
         fundingProposal.id,
