@@ -23,7 +23,6 @@ module.exports = function override(config, env) {
         }),
         new webpack.DefinePlugin({
             "process.browser": true,
-            "process.env": env,
         }),
     ];
 

@@ -4,6 +4,8 @@ import { StacksMainnet } from "@stacks/network";
 import {
   contractPrincipalCV,
   FungibleConditionCode,
+  makeContractFungiblePostCondition,
+  makeContractSTXPostCondition,
   makeStandardFungiblePostCondition,
   makeStandardSTXPostCondition,
   uintCV,
@@ -23,13 +25,23 @@ export const findTokenByContract = (tokenContract?: string) => {
   );
 };
 
-const buildTokenPC = (
+export const buildTokenPC = (
   account: string,
   tokenContract: string,
   amount: string
 ) => {
+  const parts = account.split(".");
+  const isContract = parts.length === 2;
   const details = findTokenByContract(tokenContract);
   if (tokenList[0].fullAddresses[0].startsWith(tokenContract)) {
+    if (isContract) {
+      return makeContractSTXPostCondition(
+        parts[0],
+        parts[1],
+        FungibleConditionCode.Equal,
+        amount
+      );
+    }
     return makeStandardSTXPostCondition(
       account,
       FungibleConditionCode.Equal,
@@ -37,6 +49,15 @@ const buildTokenPC = (
     );
   }
   if (details) {
+    if (isContract) {
+      return makeContractFungiblePostCondition(
+        parts[0],
+        parts[1],
+        FungibleConditionCode.Equal,
+        amount,
+        details.fullAddresses[0]
+      );
+    }
     return makeStandardFungiblePostCondition(
       account,
       FungibleConditionCode.Equal,

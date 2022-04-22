@@ -1,13 +1,13 @@
 import { toFixed } from "@distacular/common";
 import React, { useMemo } from "react";
 import Button from "react-bootstrap/esm/Button";
-import { useDeployerName } from "../hooks";
+import { useBNSName } from "../hooks";
 import { useMicroDAODeposit } from "../hooks";
 
 const MicroDAODepositView: React.FC = () => {
   const { contractAddress, deposit, txId, amount, tokenDetails } =
     useMicroDAODeposit();
-  const deployerName = useDeployerName(contractAddress);
+  const deployerName = useBNSName(contractAddress);
   const tokenAmount = useMemo(
     () => toFixed(Number(amount) / Number(`1e${tokenDetails.scale}`)),
     [amount, tokenDetails.scale]

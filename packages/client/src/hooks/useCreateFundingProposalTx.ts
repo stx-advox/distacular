@@ -81,7 +81,7 @@ export const useCreateFundingProposalTx = () => {
             )
           ),
           stringUtf8CV(fundingProposalData.memo),
-          contractPrincipalCV(daoContract[0], daoContract[1]),
+          contractPrincipalCV(tokenContract[0], tokenContract[1]),
         ],
         onFinish(data) {
           setTxId(data.txId);
@@ -95,16 +95,17 @@ export const useCreateFundingProposalTx = () => {
       const tokenInfo = findTokenByContract(
         fundingProposalData!.tokenContractAddress
       );
-      return fundingProposalData!.grants
-        .map((item) => {
-          const tokenPrecision = toFixed(
-            item[1] / Number(`1e${tokenInfo.scale}`)
-          );
-          return `Address: ${item[0]}, Amount: ${tokenPrecision} ${tokenInfo.name}`;
-        })
-        .join("\n");
+      return fundingProposalData!.grants.map((item) => {
+        const tokenPrecision = toFixed(
+          item[1] / Number(`1e${tokenInfo.scale}`)
+        );
+        return {
+          grantee: item[0],
+          amount: `${tokenPrecision} ${tokenInfo.name}`,
+        };
+      });
     }
-    return "";
+    return [];
   }, [fundingProposalData]);
 
   return {

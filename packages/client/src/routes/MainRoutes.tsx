@@ -5,7 +5,6 @@ const Home = React.lazy(() => import("../pages/Home"));
 const ExecuteFundingProposalView = React.lazy(
   () => import("../pages/ExecuteFundingProposal")
 );
-const SendSTXView = React.lazy(() => import("../pages/SendSTXView"));
 const MicroDAODepositView = React.lazy(() => import("../pages/mDAODeposit"));
 const DissentView = React.lazy(() => import("../pages/Dissent"));
 const CreateFundingProposalView = React.lazy(

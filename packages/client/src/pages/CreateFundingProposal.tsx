@@ -1,6 +1,18 @@
 import React from "react";
 import Button from "react-bootstrap/Button";
-import { useCreateFundingProposalTx } from "../hooks";
+import { useBNSName, useCreateFundingProposalTx } from "../hooks";
+
+const Fuck: React.FC<{ grantee: string; amount: string }> = ({
+  grantee,
+  amount,
+}) => {
+  const bnsName = useBNSName(grantee);
+  return (
+    <p>
+      User: {bnsName} Amount {amount}
+    </p>
+  );
+};
 
 const CreateFundingProposalView: React.FC = () => {
   // hooks
@@ -13,7 +25,13 @@ const CreateFundingProposalView: React.FC = () => {
         <p>DAO name: {fundingProposalData.contractAddress.split(".")[1]}</p>
         <p>Funding Proposal Description: {fundingProposalData.memo}</p>
         <p>Members:</p>
-        <p style={{ fontSize: 24 }}>{grants}</p>
+        {grants.map((grant) => (
+          <Fuck
+            key={grant.grantee}
+            grantee={grant.grantee}
+            amount={grant.amount}
+          />
+        ))}
         {txId ? (
           <Button
             href={`https://explorer.stacks.co/txid/${txId}?chain=mainnet`}

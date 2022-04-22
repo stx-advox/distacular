@@ -81,6 +81,7 @@ export const getProposalDissentPassed = async (
     },
   });
   if (result) {
+    console.log(result);
     return cvToValue(hexToCV(result));
   }
   return false;
@@ -113,7 +114,7 @@ export const getProposal = async (
     formattedProposal.id = proposalIndex;
     const isDissentPassed = await getProposalDissentPassed(
       contractId,
-      proposalIndex
+      formattedProposal["created-at"]
     );
     formattedProposal.isPastDissent = isDissentPassed;
 

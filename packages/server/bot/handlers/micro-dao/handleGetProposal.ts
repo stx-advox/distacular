@@ -14,6 +14,7 @@ import { client } from "../../client";
 import { proposalSelect } from "../../templates/proposal-select";
 import { getBNSName } from "../../utils/getNameAddress";
 import { getProposal, infoApi, tokenList } from "@distacular/common";
+import { MicroDAO } from "../../schemas/micro-dao";
 
 const SELECT_GET_DAO_PREFIX = `select-get-dao-`;
 const SELECT_GET_PROPOSAL_PREFIX = `select-get-proposal-`;
@@ -124,7 +125,11 @@ Status: ${ProposalStatus[proposal.status]}
 `;
       if (proposal.status === 0) {
         const { burn_block_height } = await infoApi.getCoreApiInfo();
-        const dissentPeriod = 5 * 144;
+        const [dao] = await MicroDAO.find({
+          contractAddress: contractId,
+        }).exec();
+
+        const dissentPeriod = dao.dissentPeriod;
 
         if (!proposal.isPastDissent) {
           const remainingBlocks =
