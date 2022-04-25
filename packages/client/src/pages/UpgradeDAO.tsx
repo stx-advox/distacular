@@ -95,6 +95,7 @@ export const UpgradeDAO: React.FC = () => {
           onCancel() {
             toast.error("DAO funds transfer cancelled");
           },
+          network: new StacksMainnet(),
         });
       }
     },
