@@ -1,11 +1,25 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { createFundingProposal } from "./create-funding-proposal-cmd";
+import {
+  upgradeDAO,
+  createFundingProposal,
+} from "./create-funding-proposal-cmd";
 import { createMicroDAOCmd } from "./create-micro-dao-cmd";
 import { depositMicroDAOCmd } from "./deposit-micro-dao";
 import { dissentCmd } from "./dissent-cmd";
 import { executeFundingProposalCmd } from "./execute-funding-proposal-cmd";
 import { buildGetFundingProposalCmd } from "./get-proposal-data";
 import { buildSubscribe } from "./subscribe-to-dao";
+
+export {
+  upgradeDAO,
+  createFundingProposal,
+  createMicroDAOCmd,
+  depositMicroDAOCmd,
+  dissentCmd,
+  executeFundingProposalCmd,
+  buildGetFundingProposalCmd,
+  buildSubscribe,
+};
 
 export const microDAOCmd = new SlashCommandBuilder()
   .setName("micro-dao")
@@ -15,6 +29,7 @@ export const microDAOCmd = new SlashCommandBuilder()
   .addSubcommand(createMicroDAOCmd)
   .addSubcommand(depositMicroDAOCmd)
   .addSubcommand(createFundingProposal)
+  .addSubcommand(upgradeDAO)
   .addSubcommand(dissentCmd)
   .addSubcommand(executeFundingProposalCmd)
   .addSubcommand(buildGetFundingProposalCmd)

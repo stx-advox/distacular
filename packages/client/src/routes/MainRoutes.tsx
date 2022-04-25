@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { Suspense } from "react";
 import PrivateRoute from "./PrivateRoute";
+import { UpgradeDAO } from "../pages/UpgradeDAO";
 const Home = React.lazy(() => import("../pages/Home"));
 const ExecuteFundingProposalView = React.lazy(
   () => import("../pages/ExecuteFundingProposal")
@@ -39,6 +40,10 @@ const MainRoutes: React.FC = () => {
           <Route
             path="/execute-funding-proposal/:contractAddress/:proposalId"
             element={<PrivateRoute children={<ExecuteFundingProposalView />} />}
+          />
+          <Route
+            path="/upgrade"
+            element={<PrivateRoute children={<UpgradeDAO />} />}
           />
         </Routes>
       </BrowserRouter>

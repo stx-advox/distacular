@@ -1,5 +1,6 @@
 import { getNameAddressWithErrorHandling } from "../../utils/getNameAddress";
 import {
+  CacheType,
   CommandInteraction,
   CommandInteractionOption,
   GuildMember,
@@ -27,19 +28,17 @@ const getOption = (subcommand: CommandInteractionOption, key: string) => {
     }
   }
 };
-export const handleCreateFundingProposal = async (
-  subcommand: CommandInteractionOption,
-  interaction: CommandInteraction
-) => {
-  if (!subcommand.options) {
-    return;
-  }
 
+export const getSharedFields = (
+  subcommand: CommandInteractionOption<CacheType>,
+  interaction: CommandInteraction<CacheType>
+) => {
   const memo = getOption(subcommand, "funding-proposal-description") as string;
   if (memo.length > 50) {
-    return interaction.editReply({
+    interaction.editReply({
       content: "Description length must not exceed 50 characters!",
     });
+    return;
   }
 
   const tokenName = getOption(subcommand, "token") as string;
@@ -48,6 +47,24 @@ export const handleCreateFundingProposal = async (
     tokenList.find((item) => item.name === tokenName) || tokenList[0];
 
   const tokenAddress = details.fullAddresses[0];
+
+  return { memo, tokenName, tokenAddress, details };
+};
+
+export const handleCreateFundingProposal = async (
+  subcommand: CommandInteractionOption,
+  interaction: CommandInteraction
+) => {
+  if (!subcommand.options) {
+    return;
+  }
+
+  const sharedFields = getSharedFields(subcommand, interaction);
+
+  if (!sharedFields) {
+    return;
+  }
+  const { details, memo, tokenAddress } = sharedFields;
 
   let totalAmount = 0;
 
@@ -143,7 +160,7 @@ client.on("interactionCreate", async (interaction) => {
     fundingProposal.daoContractAddress = contractId;
     await fundingProposal.save();
     interaction.editReply({
-      content: `Now select the proposal`,
+      content: `You can create the proposal by clicking the button below`,
       components: [
         markSelected(
           interaction,

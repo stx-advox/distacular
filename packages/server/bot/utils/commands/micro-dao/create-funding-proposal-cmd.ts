@@ -24,7 +24,7 @@ const createMultipleUserAmountPairs = (cmd: SlashCommandSubcommandBuilder) => {
   }
 };
 
-const createFundingProposal = () => {
+const buildFundingProposal = () => {
   const cmd = new SlashCommandSubcommandBuilder()
     .setName("create-funding-proposal")
     .setDescription(
@@ -43,4 +43,12 @@ const createFundingProposal = () => {
   return cmd;
 };
 
-export { createFundingProposal };
+const createFundingProposal = buildFundingProposal();
+
+const upgradeDAO = new SlashCommandSubcommandBuilder()
+  .setName("upgrade-dao")
+  .setDescription(
+    "Upgrade the DAO to a new version, and transfer assets to the new DAO"
+  );
+
+export { createFundingProposal, upgradeDAO };
