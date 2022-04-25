@@ -16,6 +16,7 @@ import {
   listCV,
   stringUtf8CV,
   tupleCV,
+  uintCV,
 } from "@stacks/transactions";
 
 const scAPI = new SmartContractsApi(apiConfig);
@@ -81,6 +82,7 @@ export const UpgradeDAO: React.FC = () => {
                   newDAOAddress.split(".")[0],
                   newDAOAddress.split(".")[1]
                 ),
+                amount: uintCV(balance),
               }),
             ]),
             stringUtf8CV(`Transfer ${balance} STX to new DAO`),
