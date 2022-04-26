@@ -5,6 +5,7 @@ import { TransactionsApi, Configuration } from "@stacks/blockchain-api-client";
 import { SmartContractTransaction } from "@stacks/stacks-blockchain-api-types";
 import fetch from "cross-fetch";
 import { FundingProposal } from "../bot/schemas/funding-proposal";
+import { validateStacksAddress } from "@stacks/transactions";
 
 export const apiRouter = Router();
 
@@ -12,6 +13,7 @@ apiRouter.get("/micro-dao/:daoId", (req, res) => {
   MicroDAO.findById(req.params.daoId, (err, dao) => {
     if (!err && dao) {
       return res.json({
+        id: dao.id,
         name: dao.name,
         members: dao.members,
         dissentPeriod: dao.dissentPeriod,
@@ -41,7 +43,7 @@ apiRouter.put<any, { daoId: string }, any, { txId: string }>(
     if (txId) {
       const config = new Configuration({
         fetchApi: fetch,
-        basePath: process.env.REACT_APP_STACKS_URL,
+        basePath: process.env.STACKS_URL,
       });
       const txAPI = new TransactionsApi(config);
       let txData;
@@ -113,11 +115,11 @@ apiRouter.put<any, { daoId: string }, any, { txId: string }>(
       );
 
       // res.json(txData);
+    } else {
+      res.status(400).json({
+        error: "Need a tx id sent in request body!",
+      });
     }
-
-    res.status(400).json({
-      error: "Need a tx id sent in request body!",
-    });
   }
 );
 
@@ -142,5 +144,113 @@ apiRouter.get("/funding-proposal/:id", async (req, res) => {
     contractAddress: fundingProposal.daoContractAddress,
     grants: fundingProposal.grants,
     memo: fundingProposal.memo,
+    tokenContractAddress: fundingProposal.tokenContractAddress,
   });
+});
+
+apiRouter.get("/get-daos-by-deployer-address/:deployerAddress", (req, res) => {
+  const { deployerAddress } = req.params;
+
+  if (!deployerAddress || !validateStacksAddress(deployerAddress)) {
+    return res.status(400).json({
+      error: "Please send a valid deployer address",
+    });
+  }
+
+  MicroDAO.find(
+    {
+      contractAddress: {
+        $regex: deployerAddress,
+        $options: "i",
+      },
+    },
+    (err, DAOs) => {
+      if (!err && DAOs.length) {
+        return res.json(
+          DAOs.map((dao) => ({
+            id: dao.id,
+            name: dao.name,
+            members: dao.members,
+            contractAddress: dao.contractAddress,
+          }))
+        );
+      }
+      res.status(404).json({ error: "dao not found" });
+    }
+  );
+});
+
+apiRouter.put("/upgrade-dao-contract-address", async (req, res) => {
+  const { daoId, contractAddress, proofTxId } = req.body;
+
+  if (!daoId || !contractAddress || !proofTxId) {
+    return res.status(400).json({
+      error: "Please send the dao id, contract address and proof tx id",
+    });
+  }
+
+  const txApi = new TransactionsApi(
+    new Configuration({
+      fetchApi: fetch,
+      basePath: process.env.STACKS_URL,
+    })
+  );
+
+  const tx = await txApi.getTransactionById({
+    txId: proofTxId,
+    eventLimit: 1,
+  });
+
+  if (!tx) {
+    return res.status(400).json({
+      error: "Couldn't find the transaction",
+    });
+  }
+
+  const { smart_contract } = tx as SmartContractTransaction;
+
+  if (smart_contract.contract_id !== contractAddress) {
+    return res.status(400).json({
+      error:
+        "The contract address in the proof tx doesn't match the one in the request",
+    });
+  }
+
+  MicroDAO.findById(
+    daoId,
+    async (err, dao: Document<unknown, any, IMicroDAO> & IMicroDAO) => {
+      if (err) {
+        return res.status(404).json({
+          error: `Couldn't find the DAO`,
+        });
+      }
+
+      if (!dao.contractAddress) {
+        return res.status(400).json({
+          error: "Contract address is not set!",
+        });
+      }
+
+      const oldContractAddress = dao.contractAddress;
+      const oldContractAddressParts = oldContractAddress.split(".");
+      const oldContractDeployerAddress = oldContractAddressParts[0];
+
+      const newContractAddressParts = contractAddress.split(".");
+      const newContractDeployerAddress = newContractAddressParts[0];
+
+      if (oldContractDeployerAddress !== newContractDeployerAddress) {
+        return res.status(400).json({
+          error: "DAO contract address deployer address must match",
+        });
+      }
+
+      dao.contractAddress = contractAddress;
+
+      await dao.save();
+
+      return res.json({
+        message: "Saved DAO successfully!",
+      });
+    }
+  );
 });

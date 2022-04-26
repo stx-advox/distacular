@@ -10,6 +10,7 @@ import {
   hexToCV,
   uintCV,
 } from "@stacks/transactions";
+import { STACKS_URL } from "./env";
 
 export interface IFormattedProposal {
   id: number;
@@ -20,6 +21,7 @@ export interface IFormattedProposal {
   status: number;
   targets: ITarget[];
   "total-amount": number;
+  "token-contract": string;
   isPastDissent: boolean;
 }
 
@@ -56,7 +58,7 @@ export const unpackCV = (proposal: IClarityValue): any => {
 };
 
 const config = new Configuration({
-  basePath: process.env.REACT_APP_STACKS_URL,
+  basePath: STACKS_URL,
 });
 
 export const SCApi = new SmartContractsApi(config);
@@ -79,6 +81,7 @@ export const getProposalDissentPassed = async (
     },
   });
   if (result) {
+    console.log(result);
     return cvToValue(hexToCV(result));
   }
   return false;
@@ -111,7 +114,7 @@ export const getProposal = async (
     formattedProposal.id = proposalIndex;
     const isDissentPassed = await getProposalDissentPassed(
       contractId,
-      proposalIndex
+      formattedProposal["created-at"]
     );
     formattedProposal.isPastDissent = isDissentPassed;
 

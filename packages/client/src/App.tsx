@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { MainRoutes } from "./routes";
 
+import { ToastContainer } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +27,7 @@ function App() {
         <ReactQueryDevtools initialIsOpen={false} />
         <MainRoutes />
       </QueryClientProvider>
+      <ToastContainer />
     </Connect>
   );
 }

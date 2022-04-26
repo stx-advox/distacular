@@ -1,4 +1,9 @@
-import { getProposal, IFormattedProposal, infoApi } from "@distacular/common";
+import {
+  getProposal,
+  IFormattedProposal,
+  infoApi,
+  tokenList,
+} from "@distacular/common";
 import { MessageActionRow, MessageSelectMenu } from "discord.js";
 
 export const getDAOProposals = async (contractId: string) => {
@@ -54,6 +59,7 @@ export const proposalSelect = async (
         "created-at": 0,
         "total-amount": 0,
         isPastDissent: false,
+        "token-contract": "",
         memo: "",
         proposer: "",
         status: 0,
@@ -62,6 +68,11 @@ export const proposalSelect = async (
     ];
     isDisabled = true;
   }
+
+  const tokenInfo =
+    tokenList.find((item) =>
+      item.fullAddresses[0].startsWith(proposals[0]["token-contract"])
+    ) || tokenList[0];
 
   return actionRow.addComponents([
     new MessageSelectMenu()
@@ -73,8 +84,8 @@ export const proposalSelect = async (
         proposals.map((p) => ({
           label: `Proposal #${p.id}`,
           description: `description: ${p.memo}, amount: ${
-            p["total-amount"] / 1e6
-          }`,
+            p["total-amount"] / 10 ** tokenInfo.scale
+          } ${tokenInfo.name}`,
           value: p.id.toString(),
 
           default: p.id.toString() === preSetValue,

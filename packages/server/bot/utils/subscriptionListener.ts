@@ -5,9 +5,7 @@ import { getBNSName } from "./getNameAddress";
 
 export const listenToDAOEvents = (client: Client) => {
   client.on("ready", async () => {
-    const socket = await connectWebSocketClient(
-      process.env.REACT_APP_STACKS_URL
-    );
+    const socket = await connectWebSocketClient(process.env.STACKS_URL);
 
     socket.subscribeMempool(async (event) => {
       if (event.tx_type === "contract_call") {

@@ -1,3 +1,4 @@
+import { toFixed } from "@distacular/common";
 import { openContractCall } from "@stacks/connect-react";
 import { StacksMainnet } from "@stacks/network";
 import {
@@ -7,6 +8,7 @@ import {
   stringUtf8CV,
   callReadOnlyFunction,
   cvToJSON,
+  contractPrincipalCV,
 } from "@stacks/transactions";
 import { principalCV } from "@stacks/transactions/dist/clarity/types/principalCV";
 import { useState, useCallback, useMemo } from "react";
@@ -14,6 +16,7 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { userSession } from "../constants/stacks-session";
 import { IGetFundingProposalData } from "../types";
+import { findTokenByContract } from "./useMicroDAODeposit";
 
 export const useCreateFundingProposalTx = () => {
   // hooks
@@ -42,13 +45,15 @@ export const useCreateFundingProposalTx = () => {
 
   const submitCreateFundingProposalTx = useCallback(async () => {
     if (fundingProposalData && status === "success") {
-      const [contractAddress, contractName] =
-        fundingProposalData.contractAddress.split(".");
+      const tokenContract = fundingProposalData.tokenContractAddress
+        .split("::")[0]
+        .split(".");
+      const daoContract = fundingProposalData.contractAddress.split(".");
       const balanceRes = await callReadOnlyFunction({
-        contractAddress,
-        contractName,
+        contractAddress: tokenContract[0],
+        contractName: tokenContract[1],
         functionName: "get-balance",
-        functionArgs: [],
+        functionArgs: [contractPrincipalCV(daoContract[0], daoContract[1])],
         senderAddress: userSession.loadUserData().profile.stxAddress.mainnet,
       });
 
@@ -70,8 +75,8 @@ export const useCreateFundingProposalTx = () => {
       }
 
       openContractCall({
-        contractAddress,
-        contractName,
+        contractAddress: daoContract[0],
+        contractName: daoContract[1],
         functionName: "create-funding-proposal",
         network: new StacksMainnet(),
         functionArgs: [
@@ -81,6 +86,7 @@ export const useCreateFundingProposalTx = () => {
             )
           ),
           stringUtf8CV(fundingProposalData.memo),
+          contractPrincipalCV(tokenContract[0], tokenContract[1]),
         ],
         onFinish(data) {
           setTxId(data.txId);
@@ -90,10 +96,22 @@ export const useCreateFundingProposalTx = () => {
   }, [fundingProposalData, status]);
 
   const grants = useMemo(() => {
-    return fundingProposalData?.grants
-      .map((item) => `Address: ${item[0]}, Amount: ${item[1] / 1e6} STX`)
-      .join("\n");
-  }, [fundingProposalData?.grants]);
+    if (fundingProposalData) {
+      const tokenInfo = findTokenByContract(
+        fundingProposalData!.tokenContractAddress
+      );
+      return fundingProposalData!.grants.map((item) => {
+        const tokenPrecision = toFixed(
+          item[1] / Number(`1e${tokenInfo.scale}`)
+        );
+        return {
+          grantee: item[0],
+          amount: `${tokenPrecision} ${tokenInfo.name}`,
+        };
+      });
+    }
+    return [];
+  }, [fundingProposalData]);
 
   return {
     submitCreateFundingProposalTx,

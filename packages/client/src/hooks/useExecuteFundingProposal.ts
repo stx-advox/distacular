@@ -1,12 +1,13 @@
 import { openContractCall } from "@stacks/connect-react";
 import { StacksMainnet } from "@stacks/network";
 import {
-  FungibleConditionCode,
-  makeContractSTXPostCondition,
+  contractPrincipalCV,
+  FungiblePostCondition,
   uintCV,
 } from "@stacks/transactions";
 import { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
+import { buildTokenPC } from "./useMicroDAODeposit";
 import { useProposal } from "./useProposal";
 
 export const useExecuteFundingProposal = () => {
@@ -22,19 +23,19 @@ export const useExecuteFundingProposal = () => {
   const execute = useCallback(async () => {
     if (contractAddress && proposalId && proposal) {
       const [address, name] = contractAddress.split(".");
+      const token = proposal["token-contract"].split(".") as [string, string];
       openContractCall({
         contractAddress: address,
         contractName: name,
         functionName: "execute-funding-proposal",
-        functionArgs: [uintCV(proposalId)],
+        functionArgs: [uintCV(proposalId), contractPrincipalCV(...token)],
         network: new StacksMainnet(),
         postConditions: [
-          makeContractSTXPostCondition(
-            address,
-            name,
-            FungibleConditionCode.Equal,
-            proposal["total-amount"]
-          ),
+          buildTokenPC(
+            contractAddress,
+            proposal["token-contract"],
+            String(proposal["total-amount"])
+          ) as FungiblePostCondition,
         ],
         onFinish(data) {
           setTxId(data.txId);

@@ -7,10 +7,11 @@ import {
   MessageButton,
   SelectMenuInteraction,
 } from "discord.js";
-import { checkSTXAmount } from "../send-stx";
+import { checkTokenAmount } from "../send-stx";
 import { getNameAddressWithErrorHandling } from "../../utils/getNameAddress";
 import { getDAOChoices } from "../../utils/commands/micro-dao/deposit-micro-dao";
 import { client } from "../../client";
+import { tokenList } from "@distacular/common";
 
 const SELECT_DAO_DEPOSIT_PREFIX = "select-deposit-dao-";
 
@@ -21,7 +22,7 @@ export const buildDAOSelect = async (
   selectedValue?: string,
   disabled = false
 ) => {
-  const myDAOs = await getDAOChoices(address);
+  const myDAOs = await getDAOChoices();
 
   return new MessageActionRow().addComponents([
     new MessageSelectMenu()
@@ -80,7 +81,13 @@ export const handleDepositMicroDAO = async (
 
   const amount = options.find((item) => item.name === "amount")
     ?.value as number;
-  if (checkSTXAmount(amount, interaction)) {
+
+  const tokenName = options.find((item) => item.name === "token")
+    ?.value as string;
+
+  const tokenAddress = tokenList.find((item) => item.name === tokenName)
+    ?.fullAddresses[0] as string;
+  if (checkTokenAmount(amount, tokenAddress, interaction)) {
     return null;
   }
   const userAddress = await getBNSFromInteraction(interaction);
@@ -93,7 +100,7 @@ export const handleDepositMicroDAO = async (
     content: `Select the DAO you would deposit to from your DAOs`,
     components: [
       await buildDAOSelect(
-        `${amount}`,
+        `${amount}:${tokenName}`,
         userAddress.address,
         SELECT_DAO_DEPOSIT_PREFIX
       ),
@@ -106,7 +113,11 @@ client.on("interactionCreate", async (interaction) => {
     interaction.isSelectMenu() &&
     interaction.customId.startsWith(SELECT_DAO_DEPOSIT_PREFIX)
   ) {
-    const amount = interaction.customId.replace(SELECT_DAO_DEPOSIT_PREFIX, "");
+    const [amount, tokenName] = interaction.customId
+      .replace(SELECT_DAO_DEPOSIT_PREFIX, "")
+      .split(":");
+    const tokenInfo = tokenList.find((item) => item.name === tokenName);
+    const tokenAddress = tokenInfo?.fullAddresses[0] as string;
 
     const confirmButton = interaction.message
       ?.components?.[1] as MessageActionRow | null;
@@ -141,7 +152,7 @@ client.on("interactionCreate", async (interaction) => {
       const contractAddress = interaction.values[0];
 
       await interaction.editReply({
-        content: `Confirm depositing to the selected DAO with the amount of ${amount} STX!`,
+        content: `Confirm depositing to the selected DAO with the amount of ${amount}!`,
         components: [
           markSelected(
             interaction,
@@ -152,7 +163,9 @@ client.on("interactionCreate", async (interaction) => {
               style: "LINK",
               url: `${
                 process.env.SITE_URL
-              }/deposit-micro-dao/${contractAddress}/${Number(amount) * 1e6}`,
+              }/deposit-micro-dao/${contractAddress}/${tokenAddress}/${
+                Number(amount) * 10 ** (tokenInfo?.scale as number)
+              }`,
               label: "Confirm Tx",
             }),
           ]),

@@ -4,6 +4,7 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandUserOption,
 } from "@discordjs/builders";
+import { tokenSelectBuilder } from "./deposit-micro-dao";
 
 const createMultipleUserAmountPairs = (cmd: SlashCommandSubcommandBuilder) => {
   for (let i = 1; i <= 10; i += 1) {
@@ -19,13 +20,11 @@ const createMultipleUserAmountPairs = (cmd: SlashCommandSubcommandBuilder) => {
           .setName(`amount${i}`)
           .setDescription(`The grant amount for grantee #${i}`)
           .setRequired(i === 1)
-          .setMaxValue(1000)
-          .setMinValue(1)
       );
   }
 };
 
-const createFundingProposal = () => {
+const buildFundingProposal = () => {
   const cmd = new SlashCommandSubcommandBuilder()
     .setName("create-funding-proposal")
     .setDescription(
@@ -38,9 +37,18 @@ const createFundingProposal = () => {
           "A short sentence or preferably a link to the details of the funding proposal"
         )
         .setRequired(true)
-    );
+    )
+    .addStringOption(tokenSelectBuilder);
   createMultipleUserAmountPairs(cmd);
   return cmd;
 };
 
-export { createFundingProposal };
+const createFundingProposal = buildFundingProposal();
+
+const upgradeDAO = new SlashCommandSubcommandBuilder()
+  .setName("upgrade-dao")
+  .setDescription(
+    "Upgrade the DAO to a new version, and transfer assets to the new DAO"
+  );
+
+export { createFundingProposal, upgradeDAO };

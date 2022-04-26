@@ -1,5 +1,6 @@
 import { getNameAddressWithErrorHandling } from "../../utils/getNameAddress";
 import {
+  CacheType,
   CommandInteraction,
   CommandInteractionOption,
   GuildMember,
@@ -13,6 +14,8 @@ import {
   markSelected,
 } from "./handleDepositMDAO";
 import { client } from "../../client";
+import { tokenList } from "@distacular/common";
+import { checkTokenAmount } from "../send-stx";
 
 const SELECT_DAO_FP = `select-dao-fp-`;
 
@@ -25,6 +28,29 @@ const getOption = (subcommand: CommandInteractionOption, key: string) => {
     }
   }
 };
+
+export const getSharedFields = (
+  subcommand: CommandInteractionOption<CacheType>,
+  interaction: CommandInteraction<CacheType>
+) => {
+  const memo = getOption(subcommand, "funding-proposal-description") as string;
+  if (memo.length > 50) {
+    interaction.editReply({
+      content: "Description length must not exceed 50 characters!",
+    });
+    return;
+  }
+
+  const tokenName = getOption(subcommand, "token") as string;
+
+  const details =
+    tokenList.find((item) => item.name === tokenName) || tokenList[0];
+
+  const tokenAddress = details.fullAddresses[0];
+
+  return { memo, tokenName, tokenAddress, details };
+};
+
 export const handleCreateFundingProposal = async (
   subcommand: CommandInteractionOption,
   interaction: CommandInteraction
@@ -33,12 +59,14 @@ export const handleCreateFundingProposal = async (
     return;
   }
 
-  const memo = getOption(subcommand, "funding-proposal-description");
-  if (typeof memo === "string" && memo.length > 50) {
-    return interaction.editReply({
-      content: "Description length must not exceed 50 characters!",
-    });
+  const sharedFields = getSharedFields(subcommand, interaction);
+
+  if (!sharedFields) {
+    return;
   }
+  const { details, memo, tokenAddress } = sharedFields;
+
+  let totalAmount = 0;
 
   const granteesMap = subcommand.options.reduce((acc, option) => {
     if (option.name.startsWith("grantee")) {
@@ -58,6 +86,8 @@ export const handleCreateFundingProposal = async (
       const memberKey = `grantee${grantNumber}`;
       const oldData = acc[memberKey];
 
+      totalAmount += Number(option.value);
+
       return {
         ...acc,
         [memberKey]: {
@@ -69,6 +99,10 @@ export const handleCreateFundingProposal = async (
     return acc;
   }, {} as { [x: string]: { grantee: string; amount: number } });
 
+  if (checkTokenAmount(totalAmount, tokenAddress, interaction)) {
+    return null;
+  }
+
   const addressesAmounts: [bnsName: string, amount: number][] = [];
 
   for (const { grantee, amount } of Object.values(granteesMap)) {
@@ -77,30 +111,32 @@ export const handleCreateFundingProposal = async (
       return;
     }
 
-    const amountInuSTX = Math.floor(amount * 1e6);
-    addressesAmounts.push([data.address, amountInuSTX]);
-
-    const fundingProposal = new FundingProposal();
-    fundingProposal.grants = addressesAmounts;
-    fundingProposal.memo = String(memo);
-    await fundingProposal.save();
-    const userAddress = await getBNSFromInteraction(interaction);
-
-    if (!userAddress) {
-      return;
-    }
-
-    interaction.editReply({
-      content: `Select the DAO you would deposit to from your DAOs`,
-      components: [
-        await buildDAOSelect(
-          fundingProposal.id,
-          userAddress.address,
-          SELECT_DAO_FP
-        ),
-      ],
-    });
+    const amountInSmallestUnit = Math.floor(
+      amount * Number(`1e${details.scale}`)
+    );
+    addressesAmounts.push([data.address, amountInSmallestUnit]);
   }
+  const fundingProposal = new FundingProposal();
+  fundingProposal.grants = addressesAmounts;
+  fundingProposal.tokenContractAddress = details.fullAddresses[0];
+
+  fundingProposal.memo = memo;
+  await fundingProposal.save();
+  const userAddress = await getBNSFromInteraction(interaction);
+
+  if (!userAddress) {
+    return;
+  }
+  interaction.editReply({
+    content: `Select the DAO, to create a funding proposal`,
+    components: [
+      await buildDAOSelect(
+        fundingProposal.id,
+        userAddress.address,
+        SELECT_DAO_FP
+      ),
+    ],
+  });
 };
 
 client.on("interactionCreate", async (interaction) => {
@@ -124,7 +160,7 @@ client.on("interactionCreate", async (interaction) => {
     fundingProposal.daoContractAddress = contractId;
     await fundingProposal.save();
     interaction.editReply({
-      content: `Now select the proposal`,
+      content: `You can create the proposal by clicking the button below`,
       components: [
         markSelected(
           interaction,

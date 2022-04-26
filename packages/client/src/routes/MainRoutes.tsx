@@ -2,11 +2,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import React, { Suspense } from "react";
 import PrivateRoute from "./PrivateRoute";
 import RouterProvider from "../context/RouterContext";
+import { UpgradeDAO } from "../pages/UpgradeDAO";
 const Home = React.lazy(() => import("../pages/Home"));
 const ExecuteFundingProposalView = React.lazy(
   () => import("../pages/ExecuteFundingProposal")
 );
-const SendSTXView = React.lazy(() => import("../pages/SendSTXView"));
 const MicroDAODepositView = React.lazy(() => import("../pages/mDAODeposit"));
 const DissentView = React.lazy(() => import("../pages/Dissent"));
 const CreateFundingProposalView = React.lazy(
@@ -23,10 +23,6 @@ const MainRoutes: React.FC = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<PrivateRoute children={<Home />} />} />
-            <Route
-              path="/send-stx/:txId"
-              element={<PrivateRoute children={<SendSTXView />} />}
-            />
             <Route
               path="/create-micro-dao/:daoId"
               element={<PrivateRoute children={<CreateMicroDAOView />} />}
@@ -51,6 +47,11 @@ const MainRoutes: React.FC = () => {
                 <PrivateRoute children={<ExecuteFundingProposalView />} />
               }
             />
+            <Route
+              path="/upgrade"
+              element={<PrivateRoute children={<UpgradeDAO />} />}
+            />
+
             {/* <Route index element={<Home />} /> */}
             {/* <Route path="teams" element={<Teams />}>
                   <Route path=":teamId" element={<Team />} />

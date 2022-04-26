@@ -7,6 +7,16 @@ import { handleDissent } from "./handleDissent";
 import { handleExecuteFundingProposal } from "./handleExecuteFundingProposal";
 import { handleGetFundingProposal } from "./handleGetProposal";
 import { handleSubscribe } from "./handleSubscribe";
+import {
+  buildGetFundingProposalCmd,
+  createFundingProposal,
+  createMicroDAOCmd,
+  depositMicroDAOCmd,
+  dissentCmd,
+  executeFundingProposalCmd,
+  upgradeDAO,
+} from "../../utils/commands/micro-dao";
+import { handleUpgradeDAO } from "./handleUpgradeDAO";
 
 export const handleMicroDAO = async (interaction: CommandInteraction) => {
   const commandData = interaction.options.data;
@@ -18,20 +28,31 @@ export const handleMicroDAO = async (interaction: CommandInteraction) => {
   }
 
   try {
-    if (subcommand.name === "create") {
-      await handleCreateMicroDAO(subcommand, interaction);
-    } else if (subcommand.name === "deposit") {
-      await handleDepositMicroDAO(subcommand, interaction);
-    } else if (subcommand.name === "create-funding-proposal") {
-      await handleCreateFundingProposal(subcommand, interaction);
-    } else if (subcommand.name === "dissent") {
-      await handleDissent(subcommand, interaction);
-    } else if (subcommand.name === "execute-funding-proposal") {
-      await handleExecuteFundingProposal(subcommand, interaction);
-    } else if (subcommand.name === "get-proposal-data") {
-      await handleGetFundingProposal(subcommand, interaction);
-    } else if (subcommand.name === buildSubscribe.name) {
-      await handleSubscribe(subcommand, interaction);
+    switch (subcommand.name) {
+      case createMicroDAOCmd.name:
+        await handleCreateMicroDAO(subcommand, interaction);
+        break;
+      case depositMicroDAOCmd.name:
+        await handleDepositMicroDAO(subcommand, interaction);
+        break;
+      case createFundingProposal.name:
+        await handleCreateFundingProposal(subcommand, interaction);
+        break;
+      case executeFundingProposalCmd.name:
+        await handleExecuteFundingProposal(subcommand, interaction);
+        break;
+      case buildGetFundingProposalCmd.name:
+        await handleGetFundingProposal(subcommand, interaction);
+        break;
+      case buildSubscribe.name:
+        await handleSubscribe(subcommand, interaction);
+        break;
+      case dissentCmd.name:
+        await handleDissent(subcommand, interaction);
+        break;
+      case upgradeDAO.name:
+        await handleUpgradeDAO(subcommand, interaction);
+        break;
     }
   } catch (e) {
     console.log(`A micro dao error happened`, e);
