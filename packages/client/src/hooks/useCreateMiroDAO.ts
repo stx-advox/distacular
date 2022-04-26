@@ -18,6 +18,11 @@ export const useCreateMiroDAO = () => {
       ),
     {
       enabled: !!daoId,
+      staleTime: 0,
+      cacheTime: 0,
+      retry: 0,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
     }
   );
 
@@ -34,7 +39,10 @@ export const useCreateMiroDAO = () => {
             "Content-Type": "application/json",
           },
         }
-      )
+      ),
+    {
+      retry: 1,
+    }
   );
 
   const registerMicroDAOContract = useCallback(

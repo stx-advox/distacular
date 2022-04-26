@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { MainRoutes } from "./routes";
 
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
     },
     userSession,
   };
+
   return (
     <Connect authOptions={authOptions}>
       <QueryClientProvider client={queryClient}>

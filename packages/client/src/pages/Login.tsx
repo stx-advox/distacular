@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useConnect } from "@stacks/connect-react";
 import { Button } from "react-bootstrap";
 import logo from '../logo.svg'
+import { useNavigate } from "react-router-dom";
+import { RouterContext } from "../context/RouterContext";
 const Login: React.FC = () => {
   const { authenticate, authOptions } = useConnect();
+  const navigate = useNavigate()
+  const { from } = useContext(RouterContext)
+
   const login = () => {
-    authenticate(authOptions).then(() => window.location.reload());
+    authenticate(authOptions).then(() => navigate(from));
   };
   return (
     <div className="App">

@@ -6,3 +6,4 @@ export { useDeployerName } from "./useDeployerName";
 export { useMicroDAODeposit } from "./useMicroDAODeposit";
 export { useSendSTX } from "./useSendSTX";
 export { useDissent } from "./useDissent";
+export { useSessionStorage } from "./useSessionStorage";

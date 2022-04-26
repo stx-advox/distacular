@@ -16,6 +16,11 @@ export const useSendSTX = () => {
       ),
     {
       enabled: !!txId,
+      staleTime: 0,
+      cacheTime: 0,
+      retry: 0,
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
     }
   );
 
