@@ -28,7 +28,7 @@ const MainRoutes: React.FC = () => {
               element={<PrivateRoute children={<CreateMicroDAOView />} />}
             />
             <Route
-              path="/deposit-micro-dao/:contractAddress/:amount"
+              path="/deposit-micro-dao/:contractAddress/:tokenContractAddress/:amount"
               element={<PrivateRoute children={<MicroDAODepositView />} />}
             />
             <Route
