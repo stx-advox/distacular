@@ -9,8 +9,8 @@ const CreateMicroDAOView: React.FC = () => {
     <div className="App">
       <header className="App-header">
         <p>DAO name: {daoData.name}</p>
-        <p>Members: {daoData.members.join("\n")}</p>
         <p>Admin: {daoData.admin}</p>
+        <p>Members: {daoData.members.join("\n")}</p>
         {txId ? (
           <Button
             href={`https://explorer.stacks.co/txid/${txId}?chain=mainnet`}

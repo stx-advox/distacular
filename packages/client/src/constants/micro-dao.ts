@@ -3,7 +3,7 @@ export const mDAOContract = `
 ;; micro-dao
 ;;
 ;; Small contract to manage a simple DAO structure for small teams
-(impl-trait 'SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.micro-dao-sip-010-trait.micro-dao-sip-010-trait)
+(impl-trait 'SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.micro-dao-journeys-trait.micro-dao-journeys-trait)
 
 (use-trait sip-010-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
@@ -44,6 +44,7 @@ export const mDAOContract = `
 (define-constant NOT-DIRECT-CALLER u3001)
 (define-constant NOT-MEMBER u3002)
 (define-constant INVALID-TOKEN u3003)
+(define-constant NOT-ADMIN u3004)
 
 ;; proposal error codes start with 4
 (define-constant PROPOSAL-NOT-FOUND u4001)
@@ -67,6 +68,8 @@ export const mDAOContract = `
         {address: tx-sender}
         $INITIAL_MEMBERS_PLACEHOLDER
       ))
+
+(define-constant ADMIN $ADMIN_PLACEHOLDER)
 
 ;; data maps and vars
 ;;
@@ -93,6 +96,7 @@ export const mDAOContract = `
         total-amount: uint,
         memo: (string-utf8 50)
     })
+
 
 
 (define-data-var members-count uint u0)
@@ -188,6 +192,9 @@ export const mDAOContract = `
 (define-read-only (is-valid-token (contract principal))
     (is-some (map-get? allowed-tokens contract)))
 
+
+
+
 ;; propose a new funding proposal
 
 (define-public (create-funding-proposal (targets (list 10 {address: principal, amount: uint})) (memo (string-utf8 50)) (token-contract <sip-010-trait>))
@@ -197,7 +204,8 @@ export const mDAOContract = `
             (total-amount (fold + (map get-amount targets) u0))
             (current-index (var-get funding-proposals-count))
             (data { targets: targets, proposer: tx-sender, created-at: burn-block-height, status: PROPOSED, memo: memo, token-contract: (contract-of token-contract) })
-        )       
+        )
+        
         (asserts! (is-eq contract-caller tx-sender) (err NOT-DIRECT-CALLER))
         (asserts! (is-valid-token (contract-of token-contract)) (err INVALID-TOKEN))
         (asserts! (is-member tx-sender) (err NOT-MEMBER))
@@ -273,6 +281,17 @@ export const mDAOContract = `
 
 ;; INIT
 ;;
+
+(define-public (withdraw-funds (token-contract <sip-010-trait>) (amount uint))
+    (let (
+        (balance (unwrap! (get-balance token-contract (as-contract tx-sender)) (err WTF)))
+    ) 
+        (asserts! (is-eq contract-caller tx-sender) (err NOT-DIRECT-CALLER))
+        (asserts! (is-eq ADMIN tx-sender) (err NOT-ADMIN))
+        (asserts! (is-valid-token (contract-of token-contract)) (err INVALID-TOKEN))
+        (asserts! (>= balance amount) (err NOT-ENOUGH-FUNDS))
+        (as-contract (token-transfer token-contract amount tx-sender ADMIN none))
+    ))
 
 (map add-token ALLOWED-TOKENS)
 

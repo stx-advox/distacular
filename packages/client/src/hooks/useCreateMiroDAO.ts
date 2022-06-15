@@ -62,6 +62,7 @@ export const useCreateMiroDAO = () => {
         .join("\n        ");
       const updatedContract = mDAOContract
         .replace("$INITIAL_MEMBERS_PLACEHOLDER", daoMembersList)
+        .replace("$ADMIN_PLACEHOLDER", `'${daoData.admin}`)
         // Default is 5 bitcoin days
         .replace("$DISSENT_EXPIRY", String(daoData.dissentPeriod || 144 * 5));
       openContractDeploy({
