@@ -8,6 +8,7 @@ export interface IGetFundingProposalData {
 export interface IGetDAOData {
   name: string;
   members: string[];
+  admin: string;
   dissentPeriod: number;
   contractAddress?: string;
   id: string;

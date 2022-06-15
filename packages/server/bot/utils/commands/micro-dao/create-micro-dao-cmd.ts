@@ -29,6 +29,14 @@ const createMicroDAOCmd = new SlashCommandSubcommandBuilder()
       )
       .setRequired(true)
   )
+  .addUserOption((input) =>
+    input
+      .setName("admin")
+      .setDescription(
+        "The admin can withdraw funds from the mDAO at any time typically the grantor"
+      )
+      .setRequired(true)
+  )
   .addIntegerOption(
     new SlashCommandIntegerOption()
       .setName("dissent-period")

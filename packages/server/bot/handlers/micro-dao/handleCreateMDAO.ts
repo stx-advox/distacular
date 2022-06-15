@@ -15,6 +15,8 @@ export const handleCreateMicroDAO = async (
   const dissentPeriod = subcommand.options?.find(
     (option) => option.name === "dissent-period"
   )?.value as string;
+  const admin = subcommand.options?.find((option) => option.name === "admin")
+    ?.member as GuildMember;
 
   const members = [
     interaction.member as GuildMember,
@@ -56,7 +58,21 @@ export const handleCreateMicroDAO = async (
     memberAddresses.push(data.address);
   }
 
-  const mDAO = new MicroDAO({ name, members: memberAddresses, dissentPeriod });
+  const adminAddress = await getNameAddressWithErrorHandling(
+    admin.nickname || admin.user.username,
+    interaction
+  );
+
+  if (!adminAddress) {
+    return;
+  }
+
+  const mDAO = new MicroDAO({
+    name,
+    members: memberAddresses,
+    dissentPeriod,
+    admin: adminAddress.address,
+  });
   await mDAO.save();
 
   interaction.editReply({
@@ -64,6 +80,7 @@ export const handleCreateMicroDAO = async (
       mDAO.id
     } to create the ${name} mDAO with ${members
       .map((m) => `<@${m.user.id}>`)
-      .join(" ")} as initial members`,
+      .join(" ")} as initial members
+      and ${admin.nickname || admin.user.username} as the admin`,
   });
 };

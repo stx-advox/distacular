@@ -3,13 +3,14 @@ import Button from "react-bootstrap/Button";
 import { useCreateMiroDAO } from "../hooks";
 
 const CreateMicroDAOView: React.FC = () => {
-  const { daoData, deployDAOContract, txId } = useCreateMiroDAO()
+  const { daoData, deployDAOContract, txId } = useCreateMiroDAO();
 
   return daoData ? (
     <div className="App">
       <header className="App-header">
         <p>DAO name: {daoData.name}</p>
         <p>Members: {daoData.members.join("\n")}</p>
+        <p>Admin: {daoData.admin}</p>
         {txId ? (
           <Button
             href={`https://explorer.stacks.co/txid/${txId}?chain=mainnet`}
