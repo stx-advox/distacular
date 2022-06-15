@@ -15,6 +15,7 @@ apiRouter.get("/micro-dao/:daoId", (req, res) => {
       return res.json({
         id: dao.id,
         name: dao.name,
+        admin: dao.admin,
         members: dao.members,
         dissentPeriod: dao.dissentPeriod,
       });
@@ -28,6 +29,7 @@ apiRouter.get("/micro-dao-by-contract/:contractId", (req, res) => {
     if (!err && dao[0]) {
       return res.json({
         name: dao[0].name,
+        admin: dao[0].admin,
         members: dao[0].members,
         dissentPeriod: dao[0].dissentPeriod,
       });
@@ -170,6 +172,7 @@ apiRouter.get("/get-daos-by-deployer-address/:deployerAddress", (req, res) => {
           DAOs.map((dao) => ({
             id: dao.id,
             name: dao.name,
+            admin: dao.admin,
             members: dao.members,
             contractAddress: dao.contractAddress,
           }))
