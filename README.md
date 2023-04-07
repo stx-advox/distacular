@@ -28,9 +28,9 @@ select the mDAO and then the proposal you'd like to dissent to, and you'll get a
 
 ### Execute funding proposal
 
-select mDAO then proposal then link would be to confirm exeuction
+select mDAO then proposal then link would be to confirm execution
 
 ### Get proposal data
 
-select mDAO then proposal then you'll see the info about the proposal and call to action if avaiable to either dissent or execute or nothing at all
+select mDAO then proposal then you'll see the info about the proposal and call to action if available to either dissent or execute or nothing at all
 
